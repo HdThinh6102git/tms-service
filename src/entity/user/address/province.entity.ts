@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../user.entity';
 
 @Entity({ name: 'province', schema: process.env.DB_SCHEMA })
 export class Province {

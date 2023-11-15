@@ -1,17 +1,19 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Permission } from './permission.entity';
 import { User } from './user.entity';
 
 export enum ROLE_STATUS {
-  IN_ACTIVE = 'IN_ACTIVE',
-  ACTIVE = 'ACTIVE',
+  IN_ACTIVE = 0,
+  ACTIVE = 1,
 }
 
 @Entity({ name: 'role', schema: process.env.DB_SCHEMA })
@@ -22,20 +24,20 @@ export class Role {
   @Column('varchar', { nullable: false, name: 'role_name' })
   name: string;
 
-  @Column('varchar', {
+  @Column('numeric', {
     nullable: false,
     name: 'status',
     default: ROLE_STATUS.ACTIVE,
   })
-  status: string;
+  status: number;
 
-  @Column('timestamp', {
+  @UpdateDateColumn({
     nullable: true,
     name: 'updated_at',
   })
   updatedAt: Date;
 
-  @Column('timestamp', {
+  @CreateDateColumn({
     nullable: false,
     default: () => 'CURRENT_TIMESTAMP',
     name: 'created_at',

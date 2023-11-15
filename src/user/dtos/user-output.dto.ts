@@ -38,7 +38,8 @@ export class UserOutputDto {
 
   @Expose()
   @ApiProperty()
-  public status: string;
+  @Type(() => Number)
+  public status: number;
 
   @Expose()
   @ApiProperty()

@@ -5,9 +5,9 @@ import { Role } from '#entity/user/role.entity';
 import { Permission } from '#entity/user/permission.entity';
 import * as controllers from './controllers';
 import * as providers from './providers';
-import { Province } from '#entity/user/province.entity';
-import { District } from '#entity/user/district.entity';
-import { Ward } from '#entity/user/ward.entity';
+import { Province } from '#entity/user/address/province.entity';
+import { District } from '#entity/user/address/district.entity';
+import { Ward } from '#entity/user/address/ward.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 

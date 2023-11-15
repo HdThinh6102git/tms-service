@@ -35,6 +35,6 @@ import { Verification } from '#entity/user/verification.entity';
   ],
   controllers: Object.values(controllers),
   providers: Object.values(providers),
-  exports: Object.values(providers),
+  exports: [...Object.values(providers), JwtModule],
 })
 export class AuthModule {}

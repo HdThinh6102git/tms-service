@@ -15,9 +15,9 @@ import { MESSAGES } from '../../shared/constants';
 
 import { UpdateProfileInput, UserOutputDto, UserProfileOutput } from '../dtos';
 import { plainToClass, plainToInstance } from 'class-transformer';
-import { Province } from '#entity/user/province.entity';
-import { District } from '#entity/user/district.entity';
-import { Ward } from '#entity/user/ward.entity';
+import { Province } from '#entity/user/address/province.entity';
+import { District } from '#entity/user/address/district.entity';
+import { Ward } from '#entity/user/address/ward.entity';
 import { ROLE } from '../../auth/constants';
 import { BaseApiResponse } from '../../shared/dtos';
 @Injectable()

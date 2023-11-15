@@ -1,8 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../user.entity';
 
-@Entity({ name: 'ward', schema: process.env.DB_SCHEMA })
-export class Ward {
+@Entity({ name: 'district', schema: process.env.DB_SCHEMA })
+export class District {
   @PrimaryColumn('varchar', { nullable: false, name: 'id' })
   id: string;
 
@@ -31,9 +31,9 @@ export class Ward {
   })
   deletedAt: Date;
 
-  @Column('varchar', { nullable: false, name: 'district_id' })
-  districtId: string;
+  @Column('varchar', { nullable: false, name: 'province_id' })
+  provinceId: string;
 
-  @OneToMany(() => User, (user) => user.ward)
+  @OneToMany(() => User, (user) => user.district)
   users: User[];
 }

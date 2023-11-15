@@ -12,6 +12,7 @@ import { AuthModule } from './auth';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { SharedModule } from './shared/shared.module';
+import { AnnouncementModule } from './announcement';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { SharedModule } from './shared/shared.module';
     UserModule,
     AuthModule,
     SharedModule,
+    AnnouncementModule,
     // Module Router
   ],
   providers: [

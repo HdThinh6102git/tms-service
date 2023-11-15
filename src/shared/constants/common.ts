@@ -7,6 +7,10 @@ export const REQUEST_ID_TOKEN_HEADER = 'x-request-id';
 export const FORWARDED_FOR_TOKEN_HEADER = 'x-forwarded-for';
 export const VERIFICATION_TIME = 1; //minutes
 export const MESSAGES = {
+  ANNOUNCEMENT_NOT_FOUND_IN_TRASH_BIN: 'announcement_not_found_in_trash_bin',
+  CAN_NOT_DELETE_OTHER_USER_ANNOUNCEMENT:
+    'can_not_delete_other_user_announcement',
+  ANNOUNCEMENT_NOT_FOUND: `announcement_not_found`,
   VERIFICATION_CODE_NOT_EXPIRED: 'verification_code_not_expired',
   SEND_MAIL_SUCCESSFULLY: 'send_mail_successfully',
   VERIFICATION_INCORRECT: 'verification_incorrect',
@@ -16,6 +20,7 @@ export const MESSAGES = {
   CREATED_SUCCEED: 'created_succeed',
   UPLOADED_SUCCEED: 'uploaded_succeed',
   UPDATE_SUCCEED: 'update_succeed',
+  DELETED_SUCCEED: 'deleted_succeed',
   EMAIL_NOT_FOUND: `email_not_found`,
   NOT_FOUND_USER: 'not_found_user',
   WRONG_EMAIL_FORMAT: 'wrong_email_format',

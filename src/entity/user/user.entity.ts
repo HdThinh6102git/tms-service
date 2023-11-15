@@ -5,15 +5,17 @@ import {
   BaseEntity,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
-import { Province } from './province.entity';
-import { District } from './district.entity';
-import { Ward } from './ward.entity';
+import { Province } from './address/province.entity';
+import { District } from './address/district.entity';
+import { Ward } from './address/ward.entity';
 
 export enum USER_STATUS {
-  IN_ACTIVE = 'IN_ACTIVE',
-  ACTIVE = 'ACTIVE',
+  IN_ACTIVE = 0,
+  ACTIVE = 1,
 }
 @Entity({ name: 'user', schema: process.env.DB_SCHEMA })
 export class User extends BaseEntity {
@@ -47,34 +49,35 @@ export class User extends BaseEntity {
   @Column('varchar', { nullable: false, name: 'email' })
   email: string;
 
-  @Column('varchar', {
+  @Column('numeric', {
     nullable: false,
     name: 'status',
     default: USER_STATUS.ACTIVE,
   })
-  status: string;
+  status: number;
 
   @Column('varchar', { nullable: true, name: 'refresh_token' })
   refreshToken: string;
 
-  @Column('timestamp', {
-    nullable: true,
-    name: 'updated_at',
-  })
-  updatedAt: Date;
-
-  @Column('timestamp', {
+  @CreateDateColumn({
     nullable: false,
     default: () => 'CURRENT_TIMESTAMP',
     name: 'created_at',
   })
   createdAt: Date;
 
-  @Column('timestamp', {
+  @UpdateDateColumn({
+    nullable: true,
+    name: 'updated_at',
+  })
+  updatedAt: Date;
+
+  @Column({
     nullable: true,
     name: 'deleted_at',
+    type: 'timestamptz',
   })
-  deletedAt: Date;
+  deletedAt: Date | null;
 
   @ManyToOne(() => Role, (role) => role.users)
   @JoinColumn({ name: 'role_id', referencedColumnName: 'id' })
