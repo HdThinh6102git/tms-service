@@ -8,7 +8,7 @@
 # How to run source code
 
 1. Clone the source code from GitHub
-   > Repository URL: https://github.com/HdThinh6102git/Oron-service
+   > Repository URL: https://github.com/HdThinh6102git/tms-service
    > If you have already cloned the repository, make sure to run "git pull" each time you want to get the latest code.
 2. Open the project in VS Code.
 3. Open the terminal and run "npm i" to install dependencies.
