@@ -4,15 +4,25 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { AuthTokenOutput, VerificationUser } from '../dtos';
+import {
+  AuthAdminTokenOutput,
+  AuthTokenOutput,
+  VerificationUser,
+} from '../dtos';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../../user/providers';
+import { AdminService, UserService } from '../../user/providers';
 import bcrypt from 'bcrypt';
-import { UserOutputDto } from '../../user/dtos';
+import { AdminOutput, UserOutputDto } from '../../user/dtos';
 import { plainToClass } from 'class-transformer';
 import { MESSAGES } from '../../shared/constants';
 import { User } from '#entity/user/user.entity';
-import { JwtPayload, Payload, RefreshTokenPayload } from '../auth.interface';
+import {
+  AdminPayload,
+  JwtAdminPayload,
+  JwtPayload,
+  Payload,
+  RefreshTokenPayload,
+} from '../auth.interface';
 import { MailService } from '../../shared/providers';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -26,6 +36,7 @@ export class AuthService {
     private jwt: JwtService,
     private userService: UserService,
     private mailService: MailService,
+    private adminService: AdminService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(Verification)
@@ -47,11 +58,28 @@ export class AuthService {
       }),
     };
   }
+  public generateAdminToken(admin: AdminOutput): {
+    accessToken: string;
+  } {
+    return {
+      accessToken: this.generateAdminAccessToken({
+        id: admin.id,
+        username: admin.username,
+      }),
+    };
+  }
   public generateAccessToken(data: Payload): string {
     const payload: JwtPayload = {
       id: data.id,
       username: data.username,
       role: data.role,
+    };
+    return this.jwt.sign(payload);
+  }
+  public generateAdminAccessToken(data: AdminPayload): string {
+    const payload: JwtAdminPayload = {
+      id: data.id,
+      username: data.username,
     };
     return this.jwt.sign(payload);
   }
@@ -79,6 +107,32 @@ export class AuthService {
         id: user.id,
         token: jwt.accessToken,
         refreshToken: jwt.refreshToken,
+      },
+      { excludeExtraneousValues: true },
+    );
+    //return result
+    return {
+      error: false,
+      data: output,
+      message: MESSAGES.UPDATE_SUCCEED,
+      code: 0,
+    };
+  }
+
+  public async verifyLoginAdmin(
+    username: string,
+    password: string,
+  ): Promise<BaseApiResponse<AuthAdminTokenOutput>> {
+    //validate admin
+    const admin = await this.adminService.validateAdmin(username, password);
+    //generate token
+    const jwt = this.generateAdminToken(admin);
+    //convert to output
+    const output = plainToClass(
+      AuthAdminTokenOutput,
+      {
+        id: admin.id,
+        token: jwt.accessToken,
       },
       { excludeExtraneousValues: true },
     );

@@ -22,6 +22,7 @@ export const MESSAGES = {
   UPDATE_SUCCEED: 'update_succeed',
   DELETED_SUCCEED: 'deleted_succeed',
   EMAIL_NOT_FOUND: `email_not_found`,
+  ADMIN_NOT_FOUND: `admin_not_found`,
   NOT_FOUND_USER: 'not_found_user',
   WRONG_EMAIL_FORMAT: 'wrong_email_format',
   WRONG_PHONE_NUMBER_FORMAT: 'wrong_phone_number_format',

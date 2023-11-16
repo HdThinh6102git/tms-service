@@ -16,6 +16,7 @@ import {
   VERIFICATION_TYPE,
 } from '#entity/user/verification.entity';
 import { BaseApiResponse } from '../dtos';
+import { Admin } from '#entity/user/admin.entity';
 
 @Injectable()
 export class MailService {
@@ -129,6 +130,23 @@ export class MailService {
     };
     return this.sendMail(
       user.email,
+      subject,
+      context,
+      MAIL_TEMPLATE.FORGOT_PASSWORD_TEMPLATE,
+    );
+  }
+
+  public async sendMailForgotPasswordAdmin(
+    admin: Admin,
+    password: string,
+  ): Promise<BaseApiResponse<null>> {
+    const subject = 'Oron website - Forgot password';
+    const context = {
+      shopOwnerName: admin.email,
+      password: password,
+    };
+    return this.sendMail(
+      admin.email,
       subject,
       context,
       MAIL_TEMPLATE.FORGOT_PASSWORD_TEMPLATE,

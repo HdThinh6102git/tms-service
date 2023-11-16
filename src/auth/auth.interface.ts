@@ -15,3 +15,13 @@ export interface Payload {
 export interface RefreshTokenPayload {
   sub: string;
 }
+
+export interface AdminPayload {
+  id: string;
+  username: string;
+}
+
+export interface JwtAdminPayload {
+  id: string;
+  username: string;
+}

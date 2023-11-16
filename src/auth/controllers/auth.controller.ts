@@ -1,7 +1,12 @@
 import { Body, Controller, Post } from '@nestjs/common';
 
 import { AuthService } from '../providers';
-import { AuthTokenOutput, LoginInput, VerificationUser } from '../dtos';
+import {
+  AuthAdminTokenOutput,
+  AuthTokenOutput,
+  LoginInput,
+  VerificationUser,
+} from '../dtos';
 import { BaseApiResponse } from '../../shared/dtos';
 import { MailService } from '../../shared/providers';
 
@@ -21,8 +26,14 @@ export class AuthController {
     return this.authService.verifyLogin(body.username, body.password);
   }
 
-  //forgot password
+  @Post('admin/login')
+  public async loginAdmin(
+    @Body() body: LoginInput,
+  ): Promise<BaseApiResponse<AuthAdminTokenOutput>> {
+    return this.authService.verifyLoginAdmin(body.username, body.password);
+  }
 
+  //forgot password
   @Post('sending-forgot-password-mail')
   public async sendForgotPasswordVerificationMail(
     @Body() body: { email: string },

@@ -10,4 +10,7 @@ export class Admin {
 
   @Column('varchar', { nullable: false, name: 'password' })
   password: string;
+
+  @Column('varchar', { nullable: false, name: 'email' })
+  email: string;
 }

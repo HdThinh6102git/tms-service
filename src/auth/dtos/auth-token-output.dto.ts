@@ -23,3 +23,11 @@ export class AuthTokenOutput {
   @Expose()
   refreshToken: string;
 }
+
+export class AuthAdminTokenOutput {
+  @Expose()
+  id: string;
+
+  @Expose()
+  token: string;
+}

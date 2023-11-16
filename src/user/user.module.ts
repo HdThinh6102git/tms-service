@@ -10,9 +10,12 @@ import { District } from '#entity/user/address/district.entity';
 import { Ward } from '#entity/user/address/ward.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Admin } from '#entity/user/admin.entity';
+import { SharedModule } from '../shared/shared.module';
 
 @Module({
   imports: [
+    SharedModule,
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
         global: true,
@@ -33,6 +36,7 @@ import { ConfigService } from '@nestjs/config';
       Province,
       District,
       Ward,
+      Admin,
     ]),
   ],
   controllers: Object.values(controllers),

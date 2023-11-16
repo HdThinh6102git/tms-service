@@ -7,3 +7,4 @@ export * from './address/district-params.dto';
 export * from './address/ward-params.dto';
 export * from './user-profile-output.dto';
 export * from './change-password.dto';
+export * from './admin';
