@@ -25,8 +25,7 @@ export class UserOutputDto {
 
   @Expose()
   @ApiProperty()
-  @Type(() => Date)
-  public birthDate: Date;
+  public birthDate: string;
 
   @Expose()
   @ApiProperty()

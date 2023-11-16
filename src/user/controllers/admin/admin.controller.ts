@@ -1,19 +1,35 @@
 import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
-import { AdminService } from '../../providers';
+import { AdminService, UserService } from '../../providers';
 import { JwtAuthGuard } from '../../../auth/guards';
 import { ReqContext, RequestContext } from '../../../shared/request-context';
 import { BaseApiResponse } from '../../../shared/dtos';
-import { AdminOutput, ChangePasswordDto, CreateAdminInput } from '../../dtos';
+import {
+  AdminOutput,
+  ChangePasswordDto,
+  CreateAdminInput,
+  CreateUserInput,
+  UserOutputDto,
+} from '../../dtos';
 
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly userService: UserService,
+  ) {}
 
   @Post()
   public async createNewAdmin(
     @Body() body: CreateAdminInput,
   ): Promise<BaseApiResponse<AdminOutput>> {
     return await this.adminService.createNewAdmin(body);
+  }
+
+  @Post('user')
+  public async createNewUser(
+    @Body() body: CreateUserInput,
+  ): Promise<BaseApiResponse<UserOutputDto>> {
+    return await this.userService.createUser(body);
   }
 
   @Patch('change-password')

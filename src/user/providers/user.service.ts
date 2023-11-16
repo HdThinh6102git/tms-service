@@ -9,17 +9,22 @@ import { User } from '#entity/user/user.entity';
 import { ILike, Repository } from 'typeorm';
 import { Role } from '#entity/user/role.entity';
 import { ConfigService } from '@nestjs/config';
-import { RegisterInput } from '../../auth/dtos';
 import * as bcrypt from 'bcrypt';
 import { MESSAGES } from '../../shared/constants';
 
-import { UpdateProfileInput, UserOutputDto, UserProfileOutput } from '../dtos';
+import {
+  CreateUserInput,
+  UpdateProfileInput,
+  UserOutputDto,
+  UserProfileOutput,
+} from '../dtos';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { Province } from '#entity/user/address/province.entity';
 import { District } from '#entity/user/address/district.entity';
 import { Ward } from '#entity/user/address/ward.entity';
 import { ROLE } from '../../auth/constants';
 import { BaseApiResponse } from '../../shared/dtos';
+import { isValidEmail, isValidPhone } from '../../shared/utils/utils';
 @Injectable()
 export class UserService {
   constructor(
@@ -36,7 +41,33 @@ export class UserService {
     private wardRepository: Repository<Ward>,
   ) {}
 
-  public async create(data: RegisterInput): Promise<User> {
+  public async createUser(
+    data: CreateUserInput,
+  ): Promise<BaseApiResponse<UserOutputDto>> {
+    //check valid email
+    if (!isValidEmail(data.email)) {
+      throw new HttpException(
+        {
+          error: true,
+          data: null,
+          message: MESSAGES.WRONG_EMAIL_FORMAT,
+          code: 1,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    //check valid phone number
+    if (!isValidPhone(data.phoneNumber)) {
+      throw new HttpException(
+        {
+          error: true,
+          data: null,
+          message: MESSAGES.WRONG_PHONE_NUMBER_FORMAT,
+          code: 1,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     //check exist province
     const provinceExist = await this.provinceRepository.findOne({
       where: {
@@ -158,7 +189,7 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
     //save user data
-    return this.userRepository.save({
+    const user = await this.userRepository.save({
       ...data,
       province: provinceExist,
       district: districtExist,
@@ -167,6 +198,15 @@ export class UserService {
       role: userRole,
       fullAddress: fullAddress,
     });
+    const userOutput = plainToInstance(UserOutputDto, user, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      error: false,
+      data: userOutput,
+      message: MESSAGES.CREATED_SUCCEED,
+      code: 0,
+    };
   }
 
   public async update(

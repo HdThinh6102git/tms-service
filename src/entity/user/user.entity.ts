@@ -37,11 +37,11 @@ export class User extends BaseEntity {
   @Column('text', { nullable: true, name: 'specific_address' })
   specificAddress: string;
 
-  @Column('timestamp', {
+  @Column('varchar', {
     nullable: true,
     name: 'birth_date',
   })
-  birthDate: Date;
+  birthDate: string;
 
   @Column('varchar', { nullable: false, name: 'phone_number' })
   phoneNumber: string;
@@ -55,9 +55,6 @@ export class User extends BaseEntity {
     default: USER_STATUS.ACTIVE,
   })
   status: number;
-
-  @Column('varchar', { nullable: true, name: 'refresh_token' })
-  refreshToken: string;
 
   @CreateDateColumn({
     nullable: false,
