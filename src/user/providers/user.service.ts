@@ -22,7 +22,6 @@ import { plainToClass, plainToInstance } from 'class-transformer';
 import { Province } from '#entity/user/address/province.entity';
 import { District } from '#entity/user/address/district.entity';
 import { Ward } from '#entity/user/address/ward.entity';
-import { ROLE } from '../../auth/constants';
 import { BaseApiResponse } from '../../shared/dtos';
 import { isValidEmail, isValidPhone } from '../../shared/utils/utils';
 @Injectable()
@@ -176,7 +175,7 @@ export class UserService {
     );
     // set role user
     const userRole = await this.roleRepository.findOneBy({
-      name: ROLE.USER,
+      name: data.role,
     });
     if (!userRole)
       throw new HttpException(

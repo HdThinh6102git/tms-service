@@ -60,4 +60,10 @@ export class CreateUserInput {
   @IsString()
   @IsNotEmpty()
   email: string;
+
+  @ApiProperty()
+  @MaxLength(255)
+  @IsString()
+  @IsNotEmpty()
+  role: string;
 }
