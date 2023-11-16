@@ -26,6 +26,7 @@ export class AdminController {
   }
 
   @Post('user')
+  @UseGuards(JwtAuthGuard)
   public async createNewUser(
     @Body() body: CreateUserInput,
   ): Promise<BaseApiResponse<UserOutputDto>> {
