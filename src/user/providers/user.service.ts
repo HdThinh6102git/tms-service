@@ -245,9 +245,15 @@ export class UserService {
     };
   }
 
-  public async findUserByEmailOrPhone(username: string): Promise<User> {
+  public async findUserByEmailOrPhoneorUsername(
+    username: string,
+  ): Promise<User> {
     const user: any = await this.userRepository.findOne({
-      where: [{ phoneNumber: username }, { email: ILike(username) }],
+      where: [
+        { phoneNumber: username },
+        { email: ILike(username) },
+        { username: username },
+      ],
     });
     return user;
   }
@@ -257,7 +263,7 @@ export class UserService {
     password: string,
   ): Promise<UserOutputDto> {
     // find user by email or phone
-    const user = await this.findUserByEmailOrPhone(username);
+    const user = await this.findUserByEmailOrPhoneorUsername(username);
     if (!user)
       throw new HttpException(
         {
