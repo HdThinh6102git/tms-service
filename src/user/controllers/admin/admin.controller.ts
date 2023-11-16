@@ -1,13 +1,22 @@
-import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminService, UserService } from '../../providers';
 import { JwtAuthGuard } from '../../../auth/guards';
 import { ReqContext, RequestContext } from '../../../shared/request-context';
-import { BaseApiResponse } from '../../../shared/dtos';
+import { BaseApiResponse, BasePaginationResponse } from '../../../shared/dtos';
 import {
   AdminOutput,
   ChangePasswordDto,
   CreateAdminInput,
   CreateUserInput,
+  UserFilter,
   UserOutputDto,
 } from '../../dtos';
 
@@ -31,6 +40,14 @@ export class AdminController {
     @Body() body: CreateUserInput,
   ): Promise<BaseApiResponse<UserOutputDto>> {
     return await this.userService.createUser(body);
+  }
+
+  @Get('/user')
+  @UseGuards(JwtAuthGuard)
+  public async getUsers(
+    @Query() query: UserFilter,
+  ): Promise<BasePaginationResponse<UserOutputDto>> {
+    return this.userService.getUsers(query);
   }
 
   @Patch('change-password')

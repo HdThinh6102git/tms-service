@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '#entity/user/user.entity';
-import { ILike, Repository } from 'typeorm';
+import { ILike, IsNull, Not, Repository } from 'typeorm';
 import { Role } from '#entity/user/role.entity';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -15,6 +15,7 @@ import { MESSAGES } from '../../shared/constants';
 import {
   CreateUserInput,
   UpdateProfileInput,
+  UserFilter,
   UserOutputDto,
   UserProfileOutput,
 } from '../dtos';
@@ -22,8 +23,9 @@ import { plainToClass, plainToInstance } from 'class-transformer';
 import { Province } from '#entity/user/address/province.entity';
 import { District } from '#entity/user/address/district.entity';
 import { Ward } from '#entity/user/address/ward.entity';
-import { BaseApiResponse } from '../../shared/dtos';
+import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import { isValidEmail, isValidPhone } from '../../shared/utils/utils';
+import { isEmpty } from '@nestjs/common/utils/shared.utils';
 @Injectable()
 export class UserService {
   constructor(
@@ -357,6 +359,71 @@ export class UserService {
       data: null,
       code: 0,
       message: MESSAGES.UPDATE_SUCCEED,
+    };
+  }
+
+  public async getUsers(
+    filter: UserFilter,
+  ): Promise<BasePaginationResponse<UserOutputDto>> {
+    let wheres: any[] = [];
+    const where: any = {
+      id: Not(IsNull()),
+      deletedAt: IsNull(),
+    };
+    if (filter.role) {
+      where['role'] = { id: filter.role };
+    }
+    if (filter.province) {
+      where['province'] = { id: filter.province };
+    }
+    if (filter.district) {
+      where['district'] = { id: filter.district };
+    }
+    if (filter.ward) {
+      where['ward'] = { id: filter.ward };
+    }
+    if (filter.keyword) {
+      wheres = [
+        {
+          ...where,
+          username: ILike(`%${filter.keyword}%`),
+        },
+        {
+          ...where,
+          name: ILike(`%${filter.keyword}%`),
+        },
+        {
+          ...where,
+          email: ILike(`%${filter.keyword}%`),
+        },
+        {
+          ...where,
+          phoneNumber: ILike(`%${filter.keyword}%`),
+        },
+      ];
+    }
+
+    if (isEmpty(wheres)) {
+      wheres.push(where);
+    }
+    const users = await this.userRepository.find({
+      where: wheres,
+      take: filter.limit,
+      skip: filter.skip,
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: ['role'],
+    });
+    const count = await this.userRepository.count({
+      where: wheres,
+    });
+    const usersOutput = plainToInstance(UserOutputDto, users, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      listData: usersOutput,
+      total: count,
     };
   }
 }
