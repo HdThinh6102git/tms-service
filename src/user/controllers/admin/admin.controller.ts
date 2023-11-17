@@ -20,6 +20,7 @@ import {
   UpdateUserAdminInput,
   UserFilter,
   UserOutputDto,
+  UserProfileOutput,
 } from '../../dtos';
 
 @Controller('admin')
@@ -35,6 +36,8 @@ export class AdminController {
   ): Promise<BaseApiResponse<AdminOutput>> {
     return await this.adminService.createNewAdmin(body);
   }
+
+  //user
 
   @Post('user')
   @UseGuards(JwtAuthGuard)
@@ -60,6 +63,15 @@ export class AdminController {
   ): Promise<BaseApiResponse<UserOutputDto>> {
     return await this.userService.updateUser(body, userId);
   }
+
+  @Get('user/:id')
+  public async getUserById(
+    @Param('id') userId: string,
+  ): Promise<BaseApiResponse<UserProfileOutput>> {
+    return await this.userService.getMyProfile(userId);
+  }
+
+  //admin
 
   @Patch('change-password')
   @UseGuards(JwtAuthGuard)
