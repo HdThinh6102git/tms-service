@@ -7,6 +7,7 @@ export const REQUEST_ID_TOKEN_HEADER = 'x-request-id';
 export const FORWARDED_FOR_TOKEN_HEADER = 'x-forwarded-for';
 export const VERIFICATION_TIME = 1; //minutes
 export const MESSAGES = {
+  START_AND_FINISH_YEAR_ARE_REQUIRED: 'start_and_finish_year_are_required',
   ANNOUNCEMENT_NOT_FOUND_IN_TRASH_BIN: 'announcement_not_found_in_trash_bin',
   CAN_NOT_DELETE_OTHER_USER_ANNOUNCEMENT:
     'can_not_delete_other_user_announcement',

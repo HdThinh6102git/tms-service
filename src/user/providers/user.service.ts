@@ -26,6 +26,7 @@ import { Ward } from '#entity/user/address/ward.entity';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import { isValidEmail, isValidPhone } from '../../shared/utils/utils';
 import { isEmpty } from '@nestjs/common/utils/shared.utils';
+import { ROLE } from '../../auth/constants';
 @Injectable()
 export class UserService {
   constructor(
@@ -189,6 +190,19 @@ export class UserService {
         },
         HttpStatus.BAD_REQUEST,
       );
+    if (userRole.name == ROLE.STUDENT) {
+      if (!data.startYear || !data.finishYear) {
+        throw new HttpException(
+          {
+            error: true,
+            data: null,
+            message: MESSAGES.START_AND_FINISH_YEAR_ARE_REQUIRED,
+            code: 4,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
     //save user data
     const user = await this.userRepository.save({
       ...data,

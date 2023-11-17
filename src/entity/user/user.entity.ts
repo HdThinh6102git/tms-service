@@ -56,6 +56,18 @@ export class User extends BaseEntity {
   })
   status: number;
 
+  @Column('numeric', {
+    nullable: true,
+    name: 'start_year',
+  })
+  startYear: number;
+
+  @Column('numeric', {
+    nullable: true,
+    name: 'finish_year',
+  })
+  finishYear: number;
+
   @CreateDateColumn({
     nullable: false,
     default: () => 'CURRENT_TIMESTAMP',

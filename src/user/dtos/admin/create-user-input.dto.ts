@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateUserInput {
   @ApiProperty()
@@ -66,4 +74,16 @@ export class CreateUserInput {
   @IsString()
   @IsNotEmpty()
   role: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @Transform(({ value }) => (value ? Number(value) : null))
+  @IsOptional()
+  startYear: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @Transform(({ value }) => (value ? Number(value) : null))
+  @IsOptional()
+  finishYear: number;
 }
