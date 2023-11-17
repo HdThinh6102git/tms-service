@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
   Post,
   Query,
@@ -16,6 +17,7 @@ import {
   ChangePasswordDto,
   CreateAdminInput,
   CreateUserInput,
+  UpdateUserAdminInput,
   UserFilter,
   UserOutputDto,
 } from '../../dtos';
@@ -48,6 +50,15 @@ export class AdminController {
     @Query() query: UserFilter,
   ): Promise<BasePaginationResponse<UserOutputDto>> {
     return this.userService.getUsers(query);
+  }
+
+  @Patch('user/:id')
+  @UseGuards(JwtAuthGuard)
+  public async updateUser(
+    @Param('id') userId: string,
+    @Body() body: UpdateUserAdminInput,
+  ): Promise<BaseApiResponse<UserOutputDto>> {
+    return await this.userService.updateUser(body, userId);
   }
 
   @Patch('change-password')

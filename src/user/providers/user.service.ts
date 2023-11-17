@@ -16,6 +16,7 @@ import { MESSAGES } from '../../shared/constants';
 import {
   CreateUserInput,
   UpdateProfileInput,
+  UpdateUserAdminInput,
   UpdateUserInput,
   UserFilter,
   UserOutputDto,
@@ -503,6 +504,88 @@ export class UserService {
 
     const updatedUser = await this.userRepository.save(userExist);
     const userOutput = plainToClass(UserProfileOutput, updatedUser, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      error: false,
+      data: userOutput,
+      message: MESSAGES.UPDATE_SUCCEED,
+      code: 0,
+    };
+  }
+
+  public async updateUser(
+    input: UpdateUserAdminInput,
+    userId: string,
+  ): Promise<BaseApiResponse<UserOutputDto>> {
+    const userExist = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['role'],
+    });
+    if (!userExist) {
+      throw new NotFoundException({
+        error: true,
+        message: MESSAGES.NOT_FOUND_USER,
+        code: 4,
+      });
+    }
+    if (input.password) {
+      const hash = bcrypt.hashSync(
+        input.password,
+        this.config.get('saltRounds') || 7,
+      );
+      userExist.password = hash;
+    }
+    if (input.startYear) {
+      if (userExist.role.name == ROLE.STUDENT) {
+        userExist.startYear = input.startYear;
+      }
+    }
+    if (input.finishYear) {
+      if (userExist.role.name == ROLE.STUDENT) {
+        userExist.finishYear = input.finishYear;
+      }
+    }
+    if (input.birthDate) {
+      userExist.birthDate = input.birthDate;
+    }
+    if (typeof input.status == 'number') {
+      userExist.status = input.status;
+    }
+    if (input.name) {
+      userExist.name = input.name;
+    }
+    if (input.phoneNumber) {
+      userExist.phoneNumber = input.phoneNumber;
+    }
+    if (input.email) {
+      userExist.email = input.email;
+    }
+    if (input.specificAddress) {
+      userExist.specificAddress = input.specificAddress;
+    }
+    if (input.province && input.district && input.ward) {
+      const province = await this.provinceRepository.findOne({
+        where: { id: input.province },
+      });
+      const district = await this.districtRepository.findOne({
+        where: { id: input.district },
+      });
+      const ward = await this.wardRepository.findOne({
+        where: { id: input.ward },
+      });
+      if (province && district && ward) {
+        userExist.province = province;
+        userExist.district = district;
+        userExist.ward = ward;
+        //set full address
+        userExist.fullAddress = `${ward.level} ${ward.name}, ${district.level} ${district.name}, ${province.level} ${province.name}`;
+      }
+    }
+    const updatedUser = await this.userRepository.save(userExist);
+    const userOutput = plainToClass(UserOutputDto, updatedUser, {
       excludeExtraneousValues: true,
     });
     return {
