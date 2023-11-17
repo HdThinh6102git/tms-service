@@ -203,6 +203,19 @@ export class UserService {
         );
       }
     }
+    if (userRole.name == ROLE.TEACHER) {
+      if (data.startYear || data.finishYear) {
+        throw new HttpException(
+          {
+            error: true,
+            data: null,
+            message: MESSAGES.START_AND_FINISH_YEAR_ARE_NOT_ALLOWED,
+            code: 4,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
     //save user data
     const user = await this.userRepository.save({
       ...data,
