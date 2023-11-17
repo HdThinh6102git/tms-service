@@ -43,6 +43,16 @@ export class UserProfileOutput {
 
   @Expose()
   @ApiProperty()
+  @Type(() => Number)
+  public startYear: number;
+
+  @Expose()
+  @ApiProperty()
+  @Type(() => Number)
+  public finishYear: number;
+
+  @Expose()
+  @ApiProperty()
   @Type(() => Date)
   public updatedAt: Date;
 

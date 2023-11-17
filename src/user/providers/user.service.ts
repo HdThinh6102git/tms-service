@@ -2,6 +2,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,6 +16,7 @@ import { MESSAGES } from '../../shared/constants';
 import {
   CreateUserInput,
   UpdateProfileInput,
+  UpdateUserInput,
   UserFilter,
   UserOutputDto,
   UserProfileOutput,
@@ -451,6 +453,63 @@ export class UserService {
     return {
       listData: usersOutput,
       total: count,
+    };
+  }
+
+  public async updateProfile(
+    input: UpdateUserInput,
+    userId: string,
+  ): Promise<BaseApiResponse<UserProfileOutput>> {
+    const userExist = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['role'],
+    });
+    if (!userExist) {
+      throw new NotFoundException({
+        error: true,
+        message: MESSAGES.NOT_FOUND_USER,
+        code: 4,
+      });
+    }
+    if (input.phoneNumber) {
+      userExist.phoneNumber = input.phoneNumber;
+    }
+    if (input.email) {
+      userExist.email = input.email;
+    }
+    if (input.specificAddress) {
+      userExist.specificAddress = input.specificAddress;
+    }
+    if (input.province && input.district && input.ward) {
+      const province = await this.provinceRepository.findOne({
+        where: { id: input.province },
+      });
+      const district = await this.districtRepository.findOne({
+        where: { id: input.district },
+      });
+      const ward = await this.wardRepository.findOne({
+        where: { id: input.ward },
+      });
+      if (province && district && ward) {
+        userExist.province = province;
+        userExist.district = district;
+        userExist.ward = ward;
+        //set full address
+        userExist.fullAddress = `${ward.level} ${ward.name}, ${district.level} ${district.name}, ${province.level} ${province.name}`;
+      }
+    }
+
+    const updatedUser = await this.userRepository.save(userExist);
+    const userOutput = plainToClass(UserProfileOutput, updatedUser, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      error: false,
+      data: userOutput,
+      message: MESSAGES.UPDATE_SUCCEED,
+      code: 0,
     };
   }
 }

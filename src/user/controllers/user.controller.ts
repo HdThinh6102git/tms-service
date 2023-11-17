@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse } from '../../shared/dtos';
-import { ChangePasswordDto, UserProfileOutput } from '../dtos';
+import { ChangePasswordDto, UpdateUserInput, UserProfileOutput } from '../dtos';
 import { UserService } from '../providers';
 import { JwtAuthGuard } from '../../auth/guards';
 
@@ -27,5 +27,14 @@ export class UserController {
       input.oldPassword,
       input.newPassword,
     );
+  }
+
+  @Patch()
+  @UseGuards(JwtAuthGuard)
+  public async updateProfile(
+    @ReqContext() ctx: RequestContext,
+    @Body() body: UpdateUserInput,
+  ): Promise<BaseApiResponse<UserProfileOutput>> {
+    return await this.userService.updateProfile(body, ctx.user.id);
   }
 }
