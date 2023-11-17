@@ -595,4 +595,73 @@ export class UserService {
       code: 0,
     };
   }
+
+  public async deleteUser(userId: string): Promise<BaseApiResponse<null>> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, deletedAt: IsNull() },
+    });
+    if (!user) {
+      throw new NotFoundException({
+        error: true,
+        message: MESSAGES.NOT_FOUND_USER,
+        code: 4,
+      });
+    }
+    user.deletedAt = new Date();
+    await this.userRepository.save(user);
+    return {
+      error: false,
+      data: null,
+      message: MESSAGES.UPDATE_SUCCEED,
+      code: 0,
+    };
+  }
+
+  public async deleteUserPermanently(
+    userId: string,
+  ): Promise<BaseApiResponse<null>> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, deletedAt: Not(IsNull()) },
+    });
+    if (!user) {
+      throw new NotFoundException({
+        error: true,
+        message: MESSAGES.USER_NOT_FOUND_IN_TRASH_BIN,
+        code: 4,
+      });
+    }
+    await this.userRepository.delete(userId);
+    return {
+      error: false,
+      data: null,
+      message: MESSAGES.DELETED_SUCCEED,
+      code: 0,
+    };
+  }
+
+  public async restoreUser(
+    userId: string,
+  ): Promise<BaseApiResponse<UserOutputDto>> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, deletedAt: Not(IsNull()) },
+    });
+    if (!user) {
+      throw new NotFoundException({
+        error: true,
+        message: MESSAGES.USER_NOT_FOUND_IN_TRASH_BIN,
+        code: 4,
+      });
+    }
+    user.deletedAt = null;
+    const updatedUser = await this.userRepository.save(user);
+    const userOutput = plainToClass(UserOutputDto, updatedUser, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      error: false,
+      data: userOutput,
+      message: MESSAGES.UPDATE_SUCCEED,
+      code: 0,
+    };
+  }
 }

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -65,10 +66,34 @@ export class AdminController {
   }
 
   @Get('user/:id')
+  @UseGuards(JwtAuthGuard)
   public async getUserById(
     @Param('id') userId: string,
   ): Promise<BaseApiResponse<UserProfileOutput>> {
     return await this.userService.getMyProfile(userId);
+  }
+
+  @Delete('user/:id')
+  @UseGuards(JwtAuthGuard)
+  public async deleteUser(
+    @Param('id') userId: string,
+  ): Promise<BaseApiResponse<null>> {
+    return this.userService.deleteUser(userId);
+  }
+
+  @Delete('user/permanently/:id')
+  @UseGuards(JwtAuthGuard)
+  public async deleteUserPermanently(
+    @Param('id') userId: string,
+  ): Promise<BaseApiResponse<null>> {
+    return this.userService.deleteUserPermanently(userId);
+  }
+
+  @Patch('user/restoration/:id')
+  public async restoreUser(
+    @Param('id') userId: string,
+  ): Promise<BaseApiResponse<UserOutputDto>> {
+    return await this.userService.restoreUser(userId);
   }
 
   //admin
