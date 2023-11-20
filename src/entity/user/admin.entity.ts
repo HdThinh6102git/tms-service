@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { TopicRegistrationPhase } from '../topic-registration-phase.entity';
 
 @Entity({ name: 'admin', schema: process.env.DB_SCHEMA })
 export class Admin {
@@ -13,4 +14,10 @@ export class Admin {
 
   @Column('varchar', { nullable: false, name: 'email' })
   email: string;
+
+  @OneToMany(
+    () => TopicRegistrationPhase,
+    (topicRegistrationPhase) => topicRegistrationPhase.admin,
+  )
+  topicRegistrationPhases: TopicRegistrationPhase[];
 }
