@@ -7,6 +7,8 @@ export const REQUEST_ID_TOKEN_HEADER = 'x-request-id';
 export const FORWARDED_FOR_TOKEN_HEADER = 'x-forwarded-for';
 export const VERIFICATION_TIME = 1; //minutes
 export const MESSAGES = {
+  TOPIC_NOT_FOUND_IN_TRASH_BIN: `topic_not_found_in_trash_bin`,
+  TOPIC_NOT_FOUND: 'topic_not_found',
   TOPIC_REGISTRATION_PHASE_NOT_FOUND_IN_TRASH_BIN: `topic_registration_phase_not_found_in_trash_bin`,
   TOPIC_REGISTRATION_PHASE_NOT_FOUND: `topic_registration_phase_not_found`,
   USER_NOT_FOUND_IN_TRASH_BIN: 'user_not_found_in_trash_bin',
@@ -29,6 +31,7 @@ export const MESSAGES = {
   DELETED_SUCCEED: 'deleted_succeed',
   EMAIL_NOT_FOUND: `email_not_found`,
   ADMIN_NOT_FOUND: `admin_not_found`,
+  TEACHER_NOT_FOUND: `teacher_not_found`,
   NOT_FOUND_USER: 'not_found_user',
   WRONG_EMAIL_FORMAT: 'wrong_email_format',
   WRONG_PHONE_NUMBER_FORMAT: 'wrong_phone_number_format',

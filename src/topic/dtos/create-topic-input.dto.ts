@@ -1,27 +1,28 @@
+import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class UpdateTopicRegistrationPhaseInput {
+export class CreateTopicInput {
+  @IsNotEmpty()
   @ApiProperty()
-  @IsOptional()
   @IsString()
-  title: string;
+  name: string;
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  description: string;
+  detail: string;
 
   @ApiProperty()
   @Type(() => Date)
-  @IsOptional()
   @IsDate()
   startDate: Date;
 
   @ApiProperty()
   @Type(() => Date)
-  @IsOptional()
   @IsDate()
   finishDate: Date;
+
+  @ApiProperty()
+  reviewTeacher: string;
 }

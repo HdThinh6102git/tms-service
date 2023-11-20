@@ -41,6 +41,7 @@ async function bootstrap(): Promise<string> {
   if (isProduction) {
     app.enable('trust proxy');
   }
+  app.enableCors();
   // Express Middleware
   app.useStaticAssets(path.join(__dirname, '../uploads'));
   middleware(app);

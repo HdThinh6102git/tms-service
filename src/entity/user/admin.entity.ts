@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TopicRegistrationPhase } from '../topic-registration-phase.entity';
+import { Topic } from '../topic.entity';
 
 @Entity({ name: 'admin', schema: process.env.DB_SCHEMA })
 export class Admin {
@@ -20,4 +21,7 @@ export class Admin {
     (topicRegistrationPhase) => topicRegistrationPhase.admin,
   )
   topicRegistrationPhases: TopicRegistrationPhase[];
+
+  @OneToMany(() => Topic, (topic) => topic.admin)
+  topics: Topic[];
 }

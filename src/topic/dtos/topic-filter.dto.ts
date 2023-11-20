@@ -2,9 +2,12 @@ import { PaginationParamsDto } from '../../shared/dtos';
 import { IsDate, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class TopicRegistrationPhaseFilter extends PaginationParamsDto {
+export class TopicFilter extends PaginationParamsDto {
   @IsOptional()
   keyword: string;
+
+  @IsOptional()
+  userKeyword: string;
 
   @IsOptional()
   @Type(() => Date)

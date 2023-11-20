@@ -14,6 +14,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { SharedModule } from './shared/shared.module';
 import { AnnouncementModule } from './announcement';
 import { TopicRegistrationPhaseModule } from './topic-registration-phase';
+import { TopicModule } from './topic';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { TopicRegistrationPhaseModule } from './topic-registration-phase';
     SharedModule,
     AnnouncementModule,
     TopicRegistrationPhaseModule,
+    TopicModule,
     // Module Router
   ],
   providers: [
