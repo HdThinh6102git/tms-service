@@ -412,6 +412,12 @@ export class UserService {
     if (filter.ward) {
       where['ward'] = { id: filter.ward };
     }
+    if (typeof filter.startYear == 'number') {
+      where['startYear'] = filter.startYear;
+    }
+    if (typeof filter.finishYear == 'number') {
+      where['finishYear'] = filter.finishYear;
+    }
     if (filter.keyword) {
       wheres = [
         {
