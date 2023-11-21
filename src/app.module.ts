@@ -15,6 +15,7 @@ import { SharedModule } from './shared/shared.module';
 import { AnnouncementModule } from './announcement';
 import { TopicRegistrationPhaseModule } from './topic-registration-phase';
 import { TopicModule } from './topic';
+import { MajorModule } from './major';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { TopicModule } from './topic';
     AnnouncementModule,
     TopicRegistrationPhaseModule,
     TopicModule,
+    MajorModule,
     // Module Router
   ],
   providers: [

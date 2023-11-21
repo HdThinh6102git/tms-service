@@ -7,6 +7,8 @@ export const REQUEST_ID_TOKEN_HEADER = 'x-request-id';
 export const FORWARDED_FOR_TOKEN_HEADER = 'x-forwarded-for';
 export const VERIFICATION_TIME = 1; //minutes
 export const MESSAGES = {
+  MAJOR_NOT_FOUND_IN_TRASH_BIN: 'major_not_found_in_trash_bin',
+  MAJOR_NOT_FOUND: 'major_not_found',
   TOPIC_NOT_FOUND_IN_TRASH_BIN: `topic_not_found_in_trash_bin`,
   TOPIC_NOT_FOUND: 'topic_not_found',
   TOPIC_REGISTRATION_PHASE_NOT_FOUND_IN_TRASH_BIN: `topic_registration_phase_not_found_in_trash_bin`,
