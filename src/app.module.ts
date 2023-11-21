@@ -16,6 +16,7 @@ import { AnnouncementModule } from './announcement';
 import { TopicRegistrationPhaseModule } from './topic-registration-phase';
 import { TopicModule } from './topic';
 import { MajorModule } from './major';
+import { ClassModule } from './class';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { MajorModule } from './major';
     TopicRegistrationPhaseModule,
     TopicModule,
     MajorModule,
+    ClassModule,
     // Module Router
   ],
   providers: [

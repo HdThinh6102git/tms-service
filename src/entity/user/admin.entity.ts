@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TopicRegistrationPhase } from '../topic-registration-phase.entity';
 import { Topic } from '../topic.entity';
 import { Major } from '../major.entity';
+import { Class } from '../class.entity';
 
 @Entity({ name: 'admin', schema: process.env.DB_SCHEMA })
 export class Admin {
@@ -28,4 +29,7 @@ export class Admin {
 
   @OneToMany(() => Major, (major) => major.admin)
   majors: Major[];
+
+  @OneToMany(() => Class, (clas) => clas.admin)
+  classes: Class[];
 }

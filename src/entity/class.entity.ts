@@ -4,21 +4,31 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Admin } from './user/admin.entity';
-import { Topic } from './topic.entity';
-import { Class } from './class.entity';
+import { Major } from './major.entity';
 
-@Entity({ name: 'major', schema: process.env.DB_SCHEMA })
-export class Major {
+@Entity({ name: 'class', schema: process.env.DB_SCHEMA })
+export class Class {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column('varchar', { nullable: false, name: 'name' })
   name: string;
+
+  @Column('numeric', {
+    nullable: true,
+    name: 'start_year',
+  })
+  startYear: number;
+
+  @Column('numeric', {
+    nullable: true,
+    name: 'finish_year',
+  })
+  finishYear: number;
 
   @CreateDateColumn({
     nullable: false,
@@ -33,19 +43,18 @@ export class Major {
   })
   updatedAt: Date;
 
-  @Column('timestamptz', {
+  @Column({
     nullable: true,
     name: 'deleted_at',
+    type: 'timestamptz',
   })
   deletedAt: Date | null;
 
-  @ManyToOne(() => Admin, (admin) => admin.majors)
+  @ManyToOne(() => Admin, (admin) => admin.classes)
   @JoinColumn({ name: 'admin_id', referencedColumnName: 'id' })
   admin: Admin;
 
-  @OneToMany(() => Topic, (topic) => topic.major)
-  topics: Topic[];
-
-  @OneToMany(() => Class, (clas) => clas.major)
-  classes: Class[];
+  @ManyToOne(() => Major, (major) => major.classes)
+  @JoinColumn({ name: 'major_id', referencedColumnName: 'id' })
+  major: Major;
 }
