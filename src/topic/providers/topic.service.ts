@@ -16,6 +16,7 @@ import { User } from '#entity/user/user.entity';
 import { ROLE } from '../../auth/constants';
 import { UserOutputDto } from '../../user/dtos';
 import { isEmpty } from '@nestjs/common/utils/shared.utils';
+import { Major } from '#entity/major.entity';
 
 @Injectable()
 export class TopicService {
@@ -26,6 +27,8 @@ export class TopicService {
     private adminRepo: Repository<Admin>,
     @InjectRepository(User)
     private userRepo: Repository<User>,
+    @InjectRepository(Major)
+    private majorRepo: Repository<Major>,
   ) {}
   public async createTopic(
     input: CreateTopicInput,
@@ -41,6 +44,19 @@ export class TopicService {
         error: true,
         data: null,
         message: MESSAGES.ADMIN_NOT_FOUND,
+        code: 4,
+      });
+    }
+    const major = await this.majorRepo.findOne({
+      where: {
+        id: input.majorId,
+      },
+    });
+    if (!major) {
+      throw new NotFoundException({
+        error: true,
+        data: null,
+        message: MESSAGES.MAJOR_NOT_FOUND,
         code: 4,
       });
     }
@@ -68,6 +84,7 @@ export class TopicService {
     const topic = await this.topicRepo.save({
       ...input,
       admin: admin,
+      major: major,
     });
     const topicOutput = plainToClass(TopicOutput, topic, {
       excludeExtraneousValues: true,
@@ -90,7 +107,7 @@ export class TopicService {
       where: {
         id: topicId,
       },
-      relations: ['admin'],
+      relations: ['admin', 'major'],
     });
     if (!topicExist) {
       throw new NotFoundException({
@@ -113,6 +130,16 @@ export class TopicService {
     }
     if (input.reviewTeacher) {
       topicExist.reviewTeacher = input.reviewTeacher;
+    }
+    if (input.majorId) {
+      const major = await this.majorRepo.findOne({
+        where: {
+          id: input.majorId,
+        },
+      });
+      if (major) {
+        topicExist.major = major;
+      }
     }
     const updatedTopic = await this.topicRepo.save(topicExist);
     const topicOutput = plainToClass(TopicOutput, updatedTopic, {
@@ -187,6 +214,18 @@ export class TopicService {
           detail: ILike(`%${filter.keyword}%`),
         },
       ];
+      const major = await this.majorRepo.findOne({
+        where: {
+          name: ILike(`%${filter.keyword}%`),
+        },
+      });
+      if (major) {
+        const whereMajor: any = {
+          ...where,
+          major: { id: major.id },
+        };
+        wheres.push(whereMajor);
+      }
     }
 
     if (isEmpty(wheres)) {
@@ -199,7 +238,7 @@ export class TopicService {
       order: {
         createdAt: 'DESC',
       },
-      relations: ['admin'],
+      relations: ['admin', 'major'],
     });
     const count = await this.topicRepo.count({
       where: wheres,
@@ -218,7 +257,7 @@ export class TopicService {
   ): Promise<BaseApiResponse<TopicOutput>> {
     const topic = await this.topicRepo.findOne({
       where: { id: topicId, deletedAt: IsNull() },
-      relations: ['admin'],
+      relations: ['admin', 'major'],
     });
     if (!topic) {
       throw new NotFoundException({
@@ -251,7 +290,6 @@ export class TopicService {
   public async deleteTopic(topicId: string): Promise<BaseApiResponse<null>> {
     const topic = await this.topicRepo.findOne({
       where: { id: topicId, deletedAt: IsNull() },
-      relations: ['admin'],
     });
     if (!topic) {
       throw new NotFoundException({
@@ -297,6 +335,7 @@ export class TopicService {
   ): Promise<BaseApiResponse<TopicOutput>> {
     const topic = await this.topicRepo.findOne({
       where: { id: topicId, deletedAt: Not(IsNull()) },
+      relations: ['admin', 'major'],
     });
     if (!topic) {
       throw new NotFoundException({

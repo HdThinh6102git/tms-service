@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Type } from 'class-transformer';
 import { Admin } from './user/admin.entity';
+import { Major } from './major.entity';
 
 @Entity({ name: 'topic', schema: process.env.DB_SCHEMA })
 export class Topic {
@@ -63,4 +64,8 @@ export class Topic {
   @ManyToOne(() => Admin, (admin) => admin.topics)
   @JoinColumn({ name: 'admin_id', referencedColumnName: 'id' })
   admin: Admin;
+
+  @ManyToOne(() => Major, (major) => major.topics)
+  @JoinColumn({ name: 'major_id', referencedColumnName: 'id' })
+  major: Major;
 }

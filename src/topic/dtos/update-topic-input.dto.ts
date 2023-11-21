@@ -10,6 +10,10 @@ export class UpdateTopicInput {
 
   @ApiProperty()
   @IsOptional()
+  majorId: string;
+
+  @ApiProperty()
+  @IsOptional()
   @IsString()
   detail: string;
 

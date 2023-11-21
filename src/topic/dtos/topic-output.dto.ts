@@ -1,6 +1,7 @@
 import { Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { AdminOutput, UserOutputDto } from '../../user/dtos';
+import { MajorOutput } from '../../major/dtos';
 
 export class TopicOutput {
   @Expose()
@@ -44,4 +45,9 @@ export class TopicOutput {
   @ApiProperty()
   @Type(() => AdminOutput)
   admin: AdminOutput;
+
+  @Expose()
+  @ApiProperty()
+  @Type(() => MajorOutput)
+  major: MajorOutput;
 }

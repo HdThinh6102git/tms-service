@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -7,6 +7,11 @@ export class CreateTopicInput {
   @ApiProperty()
   @IsString()
   name: string;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  @IsUUID()
+  majorId: string;
 
   @ApiProperty()
   @IsNotEmpty()
