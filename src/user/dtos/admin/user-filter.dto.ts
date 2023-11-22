@@ -25,6 +25,10 @@ export class UserFilter extends PaginationParamsDto {
   keyword: string;
 
   @IsOptional()
+  @IsString()
+  classId: string;
+
+  @IsOptional()
   @IsNumber()
   @Transform(({ value }) => (value ? Number(value) : null))
   startYear: number;

@@ -30,6 +30,7 @@ import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import { isValidEmail, isValidPhone } from '../../shared/utils/utils';
 import { isEmpty } from '@nestjs/common/utils/shared.utils';
 import { ROLE } from '../../auth/constants';
+import { Class } from '#entity/class.entity';
 @Injectable()
 export class UserService {
   constructor(
@@ -44,6 +45,8 @@ export class UserService {
     private districtRepository: Repository<District>,
     @InjectRepository(Ward)
     private wardRepository: Repository<Ward>,
+    @InjectRepository(Class)
+    private classRepository: Repository<Class>,
   ) {}
 
   public async createUser(
@@ -172,6 +175,23 @@ export class UserService {
         },
         HttpStatus.BAD_REQUEST,
       );
+    //check exist class
+    const classExist = await this.classRepository.findOne({
+      where: {
+        id: data.classId,
+      },
+    });
+    if (!classExist) {
+      throw new HttpException(
+        {
+          error: true,
+          data: null,
+          message: MESSAGES.CLASS_NOT_EXIST,
+          code: 1,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     //set full address
     const fullAddress = `${wardExist.level} ${wardExist.name}, ${districtExist.level} ${districtExist.name}, ${provinceExist.level} ${provinceExist.name}`;
     //hash password
@@ -205,6 +225,17 @@ export class UserService {
           HttpStatus.BAD_REQUEST,
         );
       }
+      if (!data.classId) {
+        throw new HttpException(
+          {
+            error: true,
+            data: null,
+            message: MESSAGES.CLASS_IS_REQUIRED,
+            code: 4,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
     if (userRole.name == ROLE.TEACHER) {
       if (data.startYear || data.finishYear) {
@@ -213,6 +244,17 @@ export class UserService {
             error: true,
             data: null,
             message: MESSAGES.START_AND_FINISH_YEAR_ARE_NOT_ALLOWED,
+            code: 4,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      if (data.classId) {
+        throw new HttpException(
+          {
+            error: true,
+            data: null,
+            message: MESSAGES.CLASS_IS_NOT_ALLOWED,
             code: 4,
           },
           HttpStatus.BAD_REQUEST,
@@ -228,6 +270,7 @@ export class UserService {
       password: hash,
       role: userRole,
       fullAddress: fullAddress,
+      clas: classExist,
     });
     const userOutput = plainToInstance(UserOutputDto, user, {
       excludeExtraneousValues: true,
@@ -248,6 +291,7 @@ export class UserService {
       where: {
         id: id,
       },
+      relations: ['role', 'clas'],
     });
     if (!user)
       throw new HttpException(
@@ -286,6 +330,7 @@ export class UserService {
         { email: ILike(username) },
         { username: username },
       ],
+      relations: ['role', 'clas'],
     });
     return user;
   }
@@ -329,9 +374,7 @@ export class UserService {
   ): Promise<BaseApiResponse<UserProfileOutput>> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: {
-        role: true,
-      },
+      relations: ['role', 'clas'],
     });
     if (!user) throw new UnauthorizedException();
     const output = plainToClass(UserProfileOutput, user, {
@@ -412,6 +455,14 @@ export class UserService {
     if (filter.ward) {
       where['ward'] = { id: filter.ward };
     }
+    if (filter.classId) {
+      const clas = await this.classRepository.findOne({
+        where: { id: filter.classId },
+      });
+      if (clas) {
+        where['clas'] = { id: filter.classId };
+      }
+    }
     if (typeof filter.startYear == 'number') {
       where['startYear'] = filter.startYear;
     }
@@ -437,8 +488,17 @@ export class UserService {
           phoneNumber: ILike(`%${filter.keyword}%`),
         },
       ];
+      const clas = await this.classRepository.findOne({
+        where: { name: ILike(`%${filter.keyword}%`) },
+      });
+      if (clas) {
+        const whereClas: any = {
+          ...where,
+          clas: { id: clas.id },
+        };
+        wheres.push(whereClas);
+      }
     }
-
     if (isEmpty(wheres)) {
       wheres.push(where);
     }
@@ -449,7 +509,7 @@ export class UserService {
       order: {
         createdAt: 'DESC',
       },
-      relations: ['role'],
+      relations: ['role', 'clas'],
     });
     const count = await this.userRepository.count({
       where: wheres,
@@ -471,7 +531,7 @@ export class UserService {
       where: {
         id: userId,
       },
-      relations: ['role'],
+      relations: ['role', 'clas'],
     });
     if (!userExist) {
       throw new NotFoundException({
@@ -528,7 +588,7 @@ export class UserService {
       where: {
         id: userId,
       },
-      relations: ['role'],
+      relations: ['role', 'clas'],
     });
     if (!userExist) {
       throw new NotFoundException({
@@ -588,6 +648,19 @@ export class UserService {
         userExist.ward = ward;
         //set full address
         userExist.fullAddress = `${ward.level} ${ward.name}, ${district.level} ${district.name}, ${province.level} ${province.name}`;
+      }
+    }
+    if (input.classId) {
+      //check exist class
+      const clas = await this.classRepository.findOne({
+        where: {
+          id: input.classId,
+        },
+      });
+      if (clas) {
+        if (userExist.role.name == ROLE.STUDENT) {
+          userExist.clas = clas;
+        }
       }
     }
     const updatedUser = await this.userRepository.save(userExist);
@@ -650,6 +723,7 @@ export class UserService {
   ): Promise<BaseApiResponse<UserOutputDto>> {
     const user = await this.userRepository.findOne({
       where: { id: userId, deletedAt: Not(IsNull()) },
+      relations: ['role', 'clas'],
     });
     if (!user) {
       throw new NotFoundException({

@@ -12,6 +12,7 @@ import { Role } from './role.entity';
 import { Province } from './address/province.entity';
 import { District } from './address/district.entity';
 import { Ward } from './address/ward.entity';
+import { Class } from '../class.entity';
 
 export enum USER_STATUS {
   IN_ACTIVE = 0,
@@ -103,4 +104,8 @@ export class User extends BaseEntity {
   @ManyToOne(() => Ward, (ward) => ward.users)
   @JoinColumn({ name: 'ward_id', referencedColumnName: 'id' })
   ward: Ward;
+
+  @ManyToOne(() => Class, (clas) => clas.users)
+  @JoinColumn({ name: 'class_id', referencedColumnName: 'id' })
+  clas: Class;
 }

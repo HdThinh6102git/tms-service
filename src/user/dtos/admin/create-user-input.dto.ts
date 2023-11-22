@@ -86,4 +86,9 @@ export class CreateUserInput {
   @Transform(({ value }) => (value ? Number(value) : null))
   @IsOptional()
   finishYear: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  classId: string;
 }

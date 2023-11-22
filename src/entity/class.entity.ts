@@ -4,11 +4,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Admin } from './user/admin.entity';
 import { Major } from './major.entity';
+import { User } from './user/user.entity';
 
 @Entity({ name: 'class', schema: process.env.DB_SCHEMA })
 export class Class {
@@ -57,4 +59,7 @@ export class Class {
   @ManyToOne(() => Major, (major) => major.classes)
   @JoinColumn({ name: 'major_id', referencedColumnName: 'id' })
   major: Major;
+
+  @OneToMany(() => User, (user) => user.clas)
+  users: User[];
 }

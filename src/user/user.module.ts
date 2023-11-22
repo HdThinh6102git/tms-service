@@ -12,6 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Admin } from '#entity/user/admin.entity';
 import { SharedModule } from '../shared/shared.module';
+import { Class } from '#entity/class.entity';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { SharedModule } from '../shared/shared.module';
       District,
       Ward,
       Admin,
+      Class,
     ]),
   ],
   controllers: Object.values(controllers),

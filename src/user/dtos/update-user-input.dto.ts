@@ -31,4 +31,8 @@ export class UpdateUserInput {
   @IsOptional()
   @IsString()
   ward: string;
+
+  @ApiProperty()
+  @IsOptional()
+  classId: string;
 }

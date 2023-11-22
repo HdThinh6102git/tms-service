@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { RoleOutput } from '../../auth/dtos/role-output.dto';
+import { ClassOutput } from '../../class/dtos';
 
 export class UserOutputDto {
   @Expose()
@@ -64,4 +65,9 @@ export class UserOutputDto {
   @ApiProperty()
   @Type(() => RoleOutput)
   role: RoleOutput;
+
+  @Expose()
+  @ApiProperty()
+  @Type(() => ClassOutput)
+  clas: ClassOutput;
 }

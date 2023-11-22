@@ -62,4 +62,8 @@ export class UpdateUserAdminInput {
   @IsOptional()
   @IsString()
   ward: string;
+
+  @ApiProperty()
+  @IsOptional()
+  classId: string;
 }
