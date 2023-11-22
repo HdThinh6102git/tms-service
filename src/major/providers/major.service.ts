@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, IsNull, Not, Repository } from 'typeorm';
 import { Admin } from '#entity/user/admin.entity';
@@ -39,6 +44,21 @@ export class MajorService {
         code: 4,
       });
     }
+    const majorNameExist = await this.majorRepo.findOne({
+      where: {
+        name: input.name,
+      },
+    });
+    if (majorNameExist) {
+      throw new HttpException(
+        {
+          error: true,
+          message: MESSAGES.MAJOR_NAME_EXIST,
+          code: 4,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const major = await this.majorRepo.save({
       ...input,
       admin: admin,
@@ -73,6 +93,21 @@ export class MajorService {
       });
     }
     if (input.name) {
+      const majorNameExist = await this.majorRepo.findOne({
+        where: {
+          name: input.name,
+        },
+      });
+      if (majorNameExist) {
+        throw new HttpException(
+          {
+            error: true,
+            message: MESSAGES.MAJOR_NAME_EXIST,
+            code: 4,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
       majorExist.name = input.name;
     }
     const updatedMajor = await this.majorRepo.save(majorExist);
