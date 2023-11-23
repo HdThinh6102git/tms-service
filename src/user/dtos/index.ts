@@ -9,3 +9,4 @@ export * from './user-profile-output.dto';
 export * from './change-password.dto';
 export * from './admin';
 export * from './update-user-input.dto';
+export * from './student-project';

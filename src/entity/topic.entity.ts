@@ -4,12 +4,16 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Type } from 'class-transformer';
 import { Admin } from './user/admin.entity';
 import { Major } from './major.entity';
+import { TopicRegistration } from './topic-registration.entity';
+import { StudentProject } from './student-project.entity';
+import { Assignment } from './assignment.entity';
 
 @Entity({ name: 'topic', schema: process.env.DB_SCHEMA })
 export class Topic {
@@ -68,4 +72,16 @@ export class Topic {
   @ManyToOne(() => Major, (major) => major.topics)
   @JoinColumn({ name: 'major_id', referencedColumnName: 'id' })
   major: Major;
+
+  @OneToMany(
+    () => TopicRegistration,
+    (topicRegistration) => topicRegistration.topic,
+  )
+  topicRegistrations: TopicRegistration[];
+
+  @OneToMany(() => StudentProject, (studentProject) => studentProject.topic)
+  studentProjects: StudentProject[];
+
+  @OneToMany(() => Assignment, (assignment) => assignment.topic)
+  assignments: Assignment[];
 }

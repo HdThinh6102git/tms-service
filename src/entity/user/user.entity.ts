@@ -7,12 +7,14 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Role } from './role.entity';
 import { Province } from './address/province.entity';
 import { District } from './address/district.entity';
 import { Ward } from './address/ward.entity';
 import { Class } from '../class.entity';
+import { TopicRegistration } from '../topic-registration.entity';
 
 export enum USER_STATUS {
   IN_ACTIVE = 0,
@@ -108,4 +110,10 @@ export class User extends BaseEntity {
   @ManyToOne(() => Class, (clas) => clas.users)
   @JoinColumn({ name: 'class_id', referencedColumnName: 'id' })
   clas: Class;
+
+  @OneToMany(
+    () => TopicRegistration,
+    (topicRegistration) => topicRegistration.user,
+  )
+  topicRegistrations: TopicRegistration[];
 }

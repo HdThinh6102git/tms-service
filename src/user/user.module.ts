@@ -13,6 +13,9 @@ import { ConfigService } from '@nestjs/config';
 import { Admin } from '#entity/user/admin.entity';
 import { SharedModule } from '../shared/shared.module';
 import { Class } from '#entity/class.entity';
+import { StudentProject } from '#entity/student-project.entity';
+import { TopicRegistration } from '#entity/topic-registration.entity';
+import { Assignment } from '#entity/assignment.entity';
 
 @Module({
   imports: [
@@ -39,6 +42,9 @@ import { Class } from '#entity/class.entity';
       Ward,
       Admin,
       Class,
+      StudentProject,
+      TopicRegistration,
+      Assignment,
     ]),
   ],
   controllers: Object.values(controllers),

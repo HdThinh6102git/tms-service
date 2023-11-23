@@ -7,6 +7,8 @@ export const REQUEST_ID_TOKEN_HEADER = 'x-request-id';
 export const FORWARDED_FOR_TOKEN_HEADER = 'x-forwarded-for';
 export const VERIFICATION_TIME = 1; //minutes
 export const MESSAGES = {
+  STUDENT_NOT_EXIST: 'student_not_exist',
+  USER_REGISTERED_THIS_TOPIC: 'user_registered_this_topic',
   CLASS_IS_NOT_ALLOWED: 'class_is_not_allowed',
   CLASS_IS_REQUIRED: 'class_is_required',
   CLASS_NOT_EXIST: 'class_not_exist',
