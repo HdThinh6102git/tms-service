@@ -11,6 +11,10 @@ import {
 import { Topic } from './topic.entity';
 import { TopicRegistration } from './topic-registration.entity';
 import { Assignment } from './assignment.entity';
+export enum STUDENT_PROJECT_STATUS {
+  WAITING_CONFIRMATION = 1,
+  ACTIVE = 2,
+}
 export enum PROJECT_ROLE {
   LEADER = 'LEADER',
   MEMBER = 'MEMBER',
@@ -28,6 +32,12 @@ export class StudentProject {
     name: 'role',
   })
   role: string;
+
+  @Column('numeric', {
+    nullable: false,
+    name: 'status',
+  })
+  status: number;
 
   @CreateDateColumn({
     nullable: false,

@@ -25,6 +25,11 @@ export class StudentProjectOutput {
 
   @Expose()
   @ApiProperty()
+  @Type(() => Number)
+  public status: number;
+
+  @Expose()
+  @ApiProperty()
   @Type(() => TopicOutput)
   topic: TopicOutput;
 

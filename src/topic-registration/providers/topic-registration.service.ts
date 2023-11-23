@@ -57,6 +57,7 @@ export class TopicRegistrationService {
       where: {
         id: userId,
       },
+      relations: ['role'],
     });
     if (!user) {
       throw new NotFoundException({
@@ -123,6 +124,7 @@ export class TopicRegistrationService {
             topic,
             firstStudent,
             PROJECT_ROLE.LEADER,
+            user.role.name,
           );
       }
       if (input.secondStudentEmail) {
@@ -149,6 +151,7 @@ export class TopicRegistrationService {
           topic,
           secondStudent,
           studentProjectRole,
+          user.role.name,
         );
       }
     }
