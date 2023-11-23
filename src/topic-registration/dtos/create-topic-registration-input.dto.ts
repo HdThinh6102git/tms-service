@@ -12,7 +12,11 @@ export class CreateTopicRegistrationInput {
   @IsUUID()
   topicId: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty()
-  studentEmail: string;
+  firstStudentEmail: string;
+
+  @IsOptional()
+  @ApiProperty()
+  secondStudentEmail: string;
 }

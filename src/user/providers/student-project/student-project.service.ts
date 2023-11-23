@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TopicRegistration } from '#entity/topic-registration.entity';
 import { Repository } from 'typeorm';
-import { PROJECT_ROLE, StudentProject } from '#entity/student-project.entity';
+import { StudentProject } from '#entity/student-project.entity';
 import { BaseApiResponse } from '../../../shared/dtos';
 import { StudentProjectOutput, UserOutputDto } from '../../dtos';
 import { plainToClass } from 'class-transformer';
@@ -21,12 +21,13 @@ export class StudentProjectService {
     topicRegistration: TopicRegistration,
     topic: Topic,
     student: User,
+    role: string,
   ): Promise<BaseApiResponse<StudentProjectOutput>> {
     const studentProject = await this.studentProjectRepo.save({
       studentId: student.id,
       topic: topic,
       topicRegistration: topicRegistration,
-      role: PROJECT_ROLE.LEADER,
+      role: role,
     });
     const studentProjectOutput = plainToClass(
       StudentProjectOutput,

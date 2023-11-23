@@ -15,6 +15,7 @@ import { MESSAGES } from '../../shared/constants';
 import { plainToClass } from 'class-transformer';
 import { StudentProjectService } from '../../user/providers';
 import { ROLE_ID } from '../../auth/constants';
+import { PROJECT_ROLE } from '#entity/student-project.entity';
 
 @Injectable()
 export class TopicRegistrationService {
@@ -57,20 +58,6 @@ export class TopicRegistrationService {
         code: 4,
       });
     }
-    const student = await this.userRepo.findOne({
-      where: {
-        email: input.studentEmail,
-        role: { id: ROLE_ID.STUDENT },
-      },
-    });
-    if (!student) {
-      throw new NotFoundException({
-        error: true,
-        data: null,
-        message: MESSAGES.STUDENT_NOT_EXIST,
-        code: 4,
-      });
-    }
     const userRegistered = await this.topicRegistrationRepo.findOne({
       where: {
         topic: { id: input.topicId },
@@ -93,11 +80,70 @@ export class TopicRegistrationService {
       user: user,
       type: TYPE.TEACHER,
     });
-    await this.studentProjectService.createStudentProject(
-      topicRegistration,
-      topic,
-      student,
-    );
+    if (topicRegistration) {
+      if (input.firstStudentEmail && input.secondStudentEmail) {
+        if (input.firstStudentEmail == input.secondStudentEmail) {
+          throw new HttpException(
+            {
+              error: true,
+              message: MESSAGES.DUPLICATE_STUDENT_EMAIL,
+              code: 4,
+            },
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+      }
+      let firstStudentProject: any;
+      if (input.firstStudentEmail) {
+        const firstStudent = await this.userRepo.findOne({
+          where: {
+            email: input.firstStudentEmail,
+            role: { id: ROLE_ID.STUDENT },
+          },
+        });
+        if (!firstStudent) {
+          throw new NotFoundException({
+            error: true,
+            data: null,
+            message: MESSAGES.STUDENT_NOT_EXIST,
+            code: 4,
+          });
+        }
+        firstStudentProject =
+          await this.studentProjectService.createStudentProject(
+            topicRegistration,
+            topic,
+            firstStudent,
+            PROJECT_ROLE.LEADER,
+          );
+      }
+      if (input.secondStudentEmail) {
+        let studentProjectRole = PROJECT_ROLE.LEADER;
+        if (firstStudentProject) {
+          studentProjectRole = PROJECT_ROLE.MEMBER;
+        }
+        const secondStudent = await this.userRepo.findOne({
+          where: {
+            email: input.secondStudentEmail,
+            role: { id: ROLE_ID.STUDENT },
+          },
+        });
+        if (!secondStudent) {
+          throw new NotFoundException({
+            error: true,
+            data: null,
+            message: MESSAGES.STUDENT_NOT_EXIST,
+            code: 4,
+          });
+        }
+        await this.studentProjectService.createStudentProject(
+          topicRegistration,
+          topic,
+          secondStudent,
+          studentProjectRole,
+        );
+      }
+    }
     const topicRegistrationOutput = plainToClass(
       TopicRegistrationOutput,
       topicRegistration,
