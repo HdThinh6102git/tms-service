@@ -5,11 +5,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TopicRegistration, TYPE } from '#entity/topic-registration.entity';
+import {
+  TOPIC_REGISTRATION_STATUS,
+  TopicRegistration,
+  TYPE,
+} from '#entity/topic-registration.entity';
 import { Repository } from 'typeorm';
 import { User } from '#entity/user/user.entity';
 import { Topic } from '#entity/topic.entity';
-import { CreateTopicRegistrationInput, TopicRegistrationOutput } from '../dtos';
+import {
+  CreateTopicRegistrationInput,
+  TopicRegistrationOutput,
+  UpdateTopicRegistrationInput,
+} from '../dtos';
 import { BaseApiResponse } from '../../shared/dtos';
 import { MESSAGES } from '../../shared/constants';
 import { plainToClass } from 'class-transformer';
@@ -155,6 +163,54 @@ export class TopicRegistrationService {
       error: false,
       data: topicRegistrationOutput,
       message: MESSAGES.CREATED_SUCCEED,
+      code: 0,
+    };
+  }
+
+  public async updateTopicRegistrationStatus(
+    input: UpdateTopicRegistrationInput,
+    topicRegistrationId: string,
+  ): Promise<BaseApiResponse<TopicRegistrationOutput>> {
+    const topicRegistrationExist = await this.topicRegistrationRepo.findOne({
+      where: {
+        id: topicRegistrationId,
+      },
+      relations: ['user', 'topic'],
+    });
+    if (!topicRegistrationExist) {
+      throw new NotFoundException({
+        error: true,
+        message: MESSAGES.TOPIC_REGISTRATION_NOT_FOUND,
+        code: 4,
+      });
+    }
+    if (typeof input.status === 'number') {
+      if (input.status == 0) {
+        topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.CANCELED;
+      } else if (input.status == 1) {
+        topicRegistrationExist.status =
+          TOPIC_REGISTRATION_STATUS.WAITING_CONFIRMATION;
+      } else if (input.status == 2) {
+        topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.REFUSED;
+      } else if (input.status == 3) {
+        topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.ACCEPTED;
+      }
+    }
+    const updatedTopicRegistration = await this.topicRegistrationRepo.save(
+      topicRegistrationExist,
+    );
+    //convert to output
+    const topicRegistrationOutput = plainToClass(
+      TopicRegistrationOutput,
+      updatedTopicRegistration,
+      {
+        excludeExtraneousValues: true,
+      },
+    );
+    return {
+      error: false,
+      data: topicRegistrationOutput,
+      message: MESSAGES.UPDATE_SUCCEED,
       code: 0,
     };
   }
