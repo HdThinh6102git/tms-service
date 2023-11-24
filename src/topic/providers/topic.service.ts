@@ -6,6 +6,8 @@ import { Topic } from '#entity/topic.entity';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
   CreateTopicInput,
+  MajorTopicFilter,
+  MajorTopicOutput,
   TopicFilter,
   TopicOutput,
   UpdateTopicInput,
@@ -244,6 +246,38 @@ export class TopicService {
       where: wheres,
     });
     const topicsOutput = plainToInstance(TopicOutput, topics, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      listData: topicsOutput,
+      total: count,
+    };
+  }
+
+  public async getTopicsByMajor(
+    filter: MajorTopicFilter,
+    majorId: string,
+  ): Promise<BasePaginationResponse<MajorTopicOutput>> {
+    const where: any = {
+      id: Not(IsNull()),
+      deletedAt: IsNull(),
+      major: { id: majorId },
+    };
+    if (filter.name) {
+      where['name'] = ILike(`%${filter.name}%`);
+    }
+    const topics = await this.topicRepo.find({
+      where: where,
+      take: filter.limit,
+      skip: filter.skip,
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+    const count = await this.topicRepo.count({
+      where: where,
+    });
+    const topicsOutput = plainToInstance(MajorTopicOutput, topics, {
       excludeExtraneousValues: true,
     });
     return {

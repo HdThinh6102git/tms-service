@@ -15,6 +15,8 @@ import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
   CreateTopicInput,
+  MajorTopicFilter,
+  MajorTopicOutput,
   TopicFilter,
   TopicOutput,
   UpdateTopicInput,
@@ -48,6 +50,15 @@ export class TopicController {
     @Query() query: TopicFilter,
   ): Promise<BasePaginationResponse<TopicOutput>> {
     return this.topicService.getTopics(query);
+  }
+
+  @Get(':majorId/filter')
+  @UseGuards(JwtAuthGuard)
+  public async getTopicsByMajor(
+    @Param('majorId') majorId: string,
+    @Query() query: MajorTopicFilter,
+  ): Promise<BasePaginationResponse<MajorTopicOutput>> {
+    return this.topicService.getTopicsByMajor(query, majorId);
   }
 
   @Get(':id')
