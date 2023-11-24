@@ -32,13 +32,13 @@ export class TopicRegistrationController {
     );
   }
 
-  @Patch(':id')
+  @Patch(':id/teacher/evaluate')
   @UseGuards(JwtAuthGuard)
-  public async updateTopicRegistrationStatus(
+  public async evaluateTeacherTopicRegistration(
     @Param('id') topicRegistrationId: string,
     @Body() body: UpdateTopicRegistrationInput,
   ): Promise<BaseApiResponse<TopicRegistrationOutput>> {
-    return await this.topicRegistrationService.updateTopicRegistrationStatus(
+    return await this.topicRegistrationService.evaluateTeacherTopicRegistration(
       body,
       topicRegistrationId,
     );

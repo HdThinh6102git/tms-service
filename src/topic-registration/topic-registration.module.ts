@@ -9,12 +9,20 @@ import * as controllers from './controllers';
 import * as providers from './providers';
 import { TopicRegistration } from '#entity/topic-registration.entity';
 import { UserModule } from '../user';
+import { StudentProject } from '#entity/student-project.entity';
 
 @Module({
   imports: [
     AuthModule,
     UserModule,
-    TypeOrmModule.forFeature([Admin, Topic, User, Major, TopicRegistration]),
+    TypeOrmModule.forFeature([
+      Admin,
+      Topic,
+      User,
+      Major,
+      TopicRegistration,
+      StudentProject,
+    ]),
   ],
   controllers: Object.values(controllers),
   providers: Object.values(providers),

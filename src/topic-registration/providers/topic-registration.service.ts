@@ -23,7 +23,7 @@ import { MESSAGES } from '../../shared/constants';
 import { plainToClass } from 'class-transformer';
 import { StudentProjectService } from '../../user/providers';
 import { ROLE_ID } from '../../auth/constants';
-import { PROJECT_ROLE } from '#entity/student-project.entity';
+import { PROJECT_ROLE, StudentProject } from '#entity/student-project.entity';
 
 @Injectable()
 export class TopicRegistrationService {
@@ -35,6 +35,8 @@ export class TopicRegistrationService {
     private userRepo: Repository<User>,
     @InjectRepository(Topic)
     private topicRepo: Repository<Topic>,
+    @InjectRepository(StudentProject)
+    private studentProjectRepo: Repository<StudentProject>,
   ) {}
 
   public async createTeacherTopicRegistration(
@@ -170,7 +172,7 @@ export class TopicRegistrationService {
     };
   }
 
-  public async updateTopicRegistrationStatus(
+  public async evaluateTeacherTopicRegistration(
     input: UpdateTopicRegistrationInput,
     topicRegistrationId: string,
   ): Promise<BaseApiResponse<TopicRegistrationOutput>> {
@@ -188,13 +190,18 @@ export class TopicRegistrationService {
       });
     }
     if (typeof input.status === 'number') {
-      if (input.status == 1) {
-        topicRegistrationExist.status =
-          TOPIC_REGISTRATION_STATUS.WAITING_CONFIRMATION;
-      } else if (input.status == 2) {
+      if (input.status == 2) {
         topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.REFUSED;
+        await this.studentProjectRepo.update(
+          { topicRegistration: { id: topicRegistrationExist.id } },
+          { status: topicRegistrationExist.status },
+        );
       } else if (input.status == 3) {
         topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.ACCEPTED;
+        await this.studentProjectRepo.update(
+          { topicRegistration: { id: topicRegistrationExist.id } },
+          { status: topicRegistrationExist.status },
+        );
       }
     }
     const updatedTopicRegistration = await this.topicRegistrationRepo.save(
