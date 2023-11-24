@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, IsNull, Not, Repository } from 'typeorm';
 import { Admin } from '#entity/user/admin.entity';
-import { Topic } from '#entity/topic.entity';
+import { Topic, TOPIC_STATUS } from '#entity/topic.entity';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
   CreateTopicInput,
@@ -254,6 +254,93 @@ export class TopicService {
     };
   }
 
+  public async getRegistrationTopicsForStudents(
+    filter: TopicFilter,
+  ): Promise<BasePaginationResponse<TopicOutput>> {
+    let wheres: any[] = [];
+    const where: any = {
+      id: Not(IsNull()),
+      deletedAt: IsNull(),
+      status: TOPIC_STATUS.STUDENT_ACTIVE,
+    };
+    if (filter.startDate) {
+      where['startDate'] = filter.startDate;
+    }
+    if (filter.finishDate) {
+      where['finishDate'] = filter.finishDate;
+    }
+    if (filter.userKeyword) {
+      let wheresUser: any[] = [];
+      wheresUser = [
+        {
+          ...where,
+          username: ILike(`%${filter.userKeyword}%`),
+        },
+        {
+          ...where,
+          name: ILike(`%${filter.userKeyword}%`),
+        },
+        {
+          ...where,
+          email: ILike(`%${filter.userKeyword}%`),
+        },
+      ];
+      const teacher = await this.userRepo.findOne({
+        where: wheresUser,
+      });
+      if (teacher) {
+        where['reviewTeacher'] = teacher.id;
+      }
+    }
+    if (filter.keyword) {
+      wheres = [
+        {
+          ...where,
+          name: ILike(`%${filter.keyword}%`),
+        },
+        {
+          ...where,
+          detail: ILike(`%${filter.keyword}%`),
+        },
+      ];
+      const major = await this.majorRepo.findOne({
+        where: {
+          name: ILike(`%${filter.keyword}%`),
+        },
+      });
+      if (major) {
+        const whereMajor: any = {
+          ...where,
+          major: { id: major.id },
+        };
+        wheres.push(whereMajor);
+      }
+    }
+
+    if (isEmpty(wheres)) {
+      wheres.push(where);
+    }
+    const topics = await this.topicRepo.find({
+      where: wheres,
+      take: filter.limit,
+      skip: filter.skip,
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: ['admin', 'major'],
+    });
+    const count = await this.topicRepo.count({
+      where: wheres,
+    });
+    const topicsOutput = plainToInstance(TopicOutput, topics, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      listData: topicsOutput,
+      total: count,
+    };
+  }
+
   public async getTopicsByMajor(
     filter: MajorTopicFilter,
     majorId: string,
@@ -262,6 +349,7 @@ export class TopicService {
       id: Not(IsNull()),
       deletedAt: IsNull(),
       major: { id: majorId },
+      status: TOPIC_STATUS.TEACHER_ACTIVE,
     };
     if (filter.name) {
       where['name'] = ILike(`%${filter.name}%`);

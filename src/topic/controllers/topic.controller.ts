@@ -52,6 +52,14 @@ export class TopicController {
     return this.topicService.getTopics(query);
   }
 
+  @Get('student')
+  @UseGuards(JwtAuthGuard)
+  public async getRegistrationTopicsForStudents(
+    @Query() query: TopicFilter,
+  ): Promise<BasePaginationResponse<TopicOutput>> {
+    return this.topicService.getRegistrationTopicsForStudents(query);
+  }
+
   @Get(':majorId/filter')
   @UseGuards(JwtAuthGuard)
   public async getTopicsByMajor(

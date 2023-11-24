@@ -18,6 +18,11 @@ export class TopicOutput {
 
   @Expose()
   @ApiProperty()
+  @Type(() => Number)
+  public status: number;
+
+  @Expose()
+  @ApiProperty()
   @Type(() => Date)
   public startDate: Date;
 

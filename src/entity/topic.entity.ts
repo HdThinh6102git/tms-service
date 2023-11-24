@@ -15,6 +15,11 @@ import { TopicRegistration } from './topic-registration.entity';
 import { StudentProject } from './student-project.entity';
 import { Assignment } from './assignment.entity';
 
+export enum TOPIC_STATUS {
+  TEACHER_ACTIVE = 1,
+  STUDENT_ACTIVE = 2,
+}
+
 @Entity({ name: 'topic', schema: process.env.DB_SCHEMA })
 export class Topic {
   @PrimaryGeneratedColumn('uuid')
@@ -25,6 +30,13 @@ export class Topic {
 
   @Column('text', { nullable: false, name: 'detail' })
   detail: string;
+
+  @Column('numeric', {
+    nullable: false,
+    name: 'status',
+    default: TOPIC_STATUS.TEACHER_ACTIVE,
+  })
+  status: number;
 
   @Type(() => Date)
   @Column('text', {

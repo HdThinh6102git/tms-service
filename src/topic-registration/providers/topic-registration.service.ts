@@ -12,7 +12,7 @@ import {
 } from '#entity/topic-registration.entity';
 import { Repository } from 'typeorm';
 import { User } from '#entity/user/user.entity';
-import { Topic } from '#entity/topic.entity';
+import { Topic, TOPIC_STATUS } from '#entity/topic.entity';
 import {
   CreateTopicRegistrationInput,
   TopicRegistrationOutput,
@@ -198,6 +198,10 @@ export class TopicRegistrationService {
         );
       } else if (input.status == 3) {
         topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.ACCEPTED;
+        await this.topicRepo.update(
+          { id: topicRegistrationExist.topic.id },
+          { status: TOPIC_STATUS.STUDENT_ACTIVE },
+        );
         await this.studentProjectRepo.update(
           { topicRegistration: { id: topicRegistrationExist.id } },
           { status: topicRegistrationExist.status },
