@@ -14,7 +14,6 @@ import { StudentProject } from './student-project.entity';
 
 export enum TOPIC_REGISTRATION_STATUS {
   WAITING_CONFIRMATION = 1,
-  CANCELED = 0,
   REFUSED = 2,
   ACCEPTED = 3,
 }

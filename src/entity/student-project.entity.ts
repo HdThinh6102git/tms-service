@@ -13,7 +13,8 @@ import { TopicRegistration } from './topic-registration.entity';
 import { Assignment } from './assignment.entity';
 export enum STUDENT_PROJECT_STATUS {
   WAITING_CONFIRMATION = 1,
-  ACTIVE = 2,
+  REFUSED = 2,
+  ACTIVE = 3,
 }
 export enum PROJECT_ROLE {
   LEADER = 'LEADER',

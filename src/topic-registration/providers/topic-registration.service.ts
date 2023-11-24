@@ -188,9 +188,7 @@ export class TopicRegistrationService {
       });
     }
     if (typeof input.status === 'number') {
-      if (input.status == 0) {
-        topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.CANCELED;
-      } else if (input.status == 1) {
+      if (input.status == 1) {
         topicRegistrationExist.status =
           TOPIC_REGISTRATION_STATUS.WAITING_CONFIRMATION;
       } else if (input.status == 2) {
