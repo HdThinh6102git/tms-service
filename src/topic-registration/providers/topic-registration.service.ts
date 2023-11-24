@@ -326,6 +326,63 @@ export class TopicRegistrationService {
     };
   }
 
+  public async evaluateStudentTopicRegistration(
+    input: UpdateTopicRegistrationInput,
+    topicRegistrationId: string,
+  ): Promise<BaseApiResponse<TopicRegistrationOutput>> {
+    const topicRegistrationExist = await this.topicRegistrationRepo.findOne({
+      where: {
+        id: topicRegistrationId,
+        type: TYPE.STUDENT,
+      },
+      relations: ['user', 'topic'],
+    });
+    if (!topicRegistrationExist) {
+      throw new NotFoundException({
+        error: true,
+        message: MESSAGES.TOPIC_REGISTRATION_NOT_FOUND,
+        code: 4,
+      });
+    }
+    if (typeof input.status === 'number') {
+      if (input.status == 2) {
+        topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.REFUSED;
+      } else if (input.status == 3) {
+        topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.ACCEPTED;
+        const topic = await this.topicRepo.findOne({
+          where: {
+            id: topicRegistrationExist.topic.id,
+          },
+        });
+        if (topic) {
+          await this.studentProjectService.createStudentProjectByStudent(
+            topic,
+            topicRegistrationExist.user.id,
+            PROJECT_ROLE.MEMBER,
+            STUDENT_PROJECT_STATUS.ACTIVE,
+          );
+        }
+      }
+    }
+    const updatedTopicRegistration = await this.topicRegistrationRepo.save(
+      topicRegistrationExist,
+    );
+    //convert to output
+    const topicRegistrationOutput = plainToClass(
+      TopicRegistrationOutput,
+      updatedTopicRegistration,
+      {
+        excludeExtraneousValues: true,
+      },
+    );
+    return {
+      error: false,
+      data: topicRegistrationOutput,
+      message: MESSAGES.UPDATE_SUCCEED,
+      code: 0,
+    };
+  }
+
   public async cancelTeacherTopicRegistration(
     topicRegistrationId: string,
   ): Promise<BaseApiResponse<null>> {

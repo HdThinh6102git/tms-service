@@ -58,6 +58,18 @@ export class TopicRegistrationController {
     );
   }
 
+  @Patch(':id/student/evaluate')
+  @UseGuards(JwtAuthGuard)
+  public async evaluateStudentTopicRegistration(
+    @Param('id') topicRegistrationId: string,
+    @Body() body: UpdateTopicRegistrationInput,
+  ): Promise<BaseApiResponse<TopicRegistrationOutput>> {
+    return await this.topicRegistrationService.evaluateStudentTopicRegistration(
+      body,
+      topicRegistrationId,
+    );
+  }
+
   @Delete('cancellation/:id')
   @UseGuards(JwtAuthGuard)
   public async cancelTeacherTopicRegistration(
