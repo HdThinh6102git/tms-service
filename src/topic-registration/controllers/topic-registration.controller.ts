@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Param,
   Patch,
   Post,
@@ -40,6 +41,16 @@ export class TopicRegistrationController {
   ): Promise<BaseApiResponse<TopicRegistrationOutput>> {
     return await this.topicRegistrationService.evaluateTeacherTopicRegistration(
       body,
+      topicRegistrationId,
+    );
+  }
+
+  @Delete('cancellation/:id')
+  @UseGuards(JwtAuthGuard)
+  public async cancelTeacherTopicRegistration(
+    @Param('id') topicRegistrationId: string,
+  ): Promise<BaseApiResponse<null>> {
+    return this.topicRegistrationService.cancelTeacherTopicRegistration(
       topicRegistrationId,
     );
   }
