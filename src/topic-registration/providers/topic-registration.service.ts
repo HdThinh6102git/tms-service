@@ -389,6 +389,8 @@ export class TopicRegistrationService {
     const topicRegistration = await this.topicRegistrationRepo.findOne({
       where: {
         id: topicRegistrationId,
+        type: TYPE.TEACHER,
+        status: TOPIC_REGISTRATION_STATUS.WAITING_CONFIRMATION,
       },
     });
     if (!topicRegistration) {
@@ -401,6 +403,32 @@ export class TopicRegistrationService {
     await this.studentProjectRepo.delete({
       topicRegistration: { id: topicRegistration.id },
     });
+    await this.topicRegistrationRepo.delete(topicRegistrationId);
+    return {
+      error: false,
+      data: null,
+      message: MESSAGES.DELETED_SUCCEED,
+      code: 0,
+    };
+  }
+
+  public async cancelStudentTopicRegistration(
+    topicRegistrationId: string,
+  ): Promise<BaseApiResponse<null>> {
+    const topicRegistration = await this.topicRegistrationRepo.findOne({
+      where: {
+        id: topicRegistrationId,
+        type: TYPE.STUDENT,
+        status: TOPIC_REGISTRATION_STATUS.WAITING_CONFIRMATION,
+      },
+    });
+    if (!topicRegistration) {
+      throw new NotFoundException({
+        error: true,
+        message: MESSAGES.TOPIC_REGISTRATION_NOT_FOUND,
+        code: 4,
+      });
+    }
     await this.topicRegistrationRepo.delete(topicRegistrationId);
     return {
       error: false,

@@ -70,12 +70,22 @@ export class TopicRegistrationController {
     );
   }
 
-  @Delete('cancellation/:id')
+  @Delete('cancellation/:id/teacher')
   @UseGuards(JwtAuthGuard)
   public async cancelTeacherTopicRegistration(
     @Param('id') topicRegistrationId: string,
   ): Promise<BaseApiResponse<null>> {
     return this.topicRegistrationService.cancelTeacherTopicRegistration(
+      topicRegistrationId,
+    );
+  }
+
+  @Delete('cancellation/:id/student')
+  @UseGuards(JwtAuthGuard)
+  public async cancelStudentTopicRegistration(
+    @Param('id') topicRegistrationId: string,
+  ): Promise<BaseApiResponse<null>> {
+    return this.topicRegistrationService.cancelStudentTopicRegistration(
       topicRegistrationId,
     );
   }
