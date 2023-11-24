@@ -16,7 +16,7 @@ export class StudentProjectService {
     private studentProjectRepo: Repository<StudentProject>,
   ) {}
 
-  public async createStudentProject(
+  public async createStudentProjectByTeacher(
     topicRegistration: TopicRegistration,
     topic: Topic,
     student: User,
@@ -33,6 +33,26 @@ export class StudentProjectService {
       topicRegistration: topicRegistration,
       role: role,
       status: studentProjectStatus,
+    });
+    return {
+      error: false,
+      data: studentProject,
+      message: MESSAGES.CREATED_SUCCEED,
+      code: 0,
+    };
+  }
+
+  public async createStudentProjectByStudent(
+    topic: Topic,
+    studentId: string,
+    role: string,
+    status: number,
+  ): Promise<BaseApiResponse<StudentProject>> {
+    const studentProject = await this.studentProjectRepo.save({
+      studentId: studentId,
+      topic: topic,
+      role: role,
+      status: status,
     });
     return {
       error: false,

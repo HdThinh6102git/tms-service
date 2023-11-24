@@ -12,6 +12,7 @@ import { JwtAuthGuard } from '../../auth/guards';
 import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse } from '../../shared/dtos';
 import {
+  CreateStudentTopicRegistrationInput,
   CreateTopicRegistrationInput,
   TopicRegistrationOutput,
   UpdateTopicRegistrationInput,
@@ -28,6 +29,18 @@ export class TopicRegistrationController {
     @Body() body: CreateTopicRegistrationInput,
   ): Promise<BaseApiResponse<TopicRegistrationOutput>> {
     return await this.topicRegistrationService.createTeacherTopicRegistration(
+      body,
+      ctx.user.id,
+    );
+  }
+
+  @Post('student')
+  @UseGuards(JwtAuthGuard)
+  public async createStudentTopicRegistration(
+    @ReqContext() ctx: RequestContext,
+    @Body() body: CreateStudentTopicRegistrationInput,
+  ): Promise<BaseApiResponse<null>> {
+    return await this.topicRegistrationService.createStudentTopicRegistration(
       body,
       ctx.user.id,
     );

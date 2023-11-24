@@ -19,7 +19,7 @@ export enum TOPIC_REGISTRATION_STATUS {
 }
 
 export enum TYPE {
-  USER = 'USER',
+  STUDENT = 'STUDENT',
   TEACHER = 'TEACHER',
 }
 @Entity({ name: 'topic_registration', schema: process.env.DB_SCHEMA })

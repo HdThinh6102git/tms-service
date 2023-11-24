@@ -14,6 +14,7 @@ import { Repository } from 'typeorm';
 import { User } from '#entity/user/user.entity';
 import { Topic, TOPIC_STATUS } from '#entity/topic.entity';
 import {
+  CreateStudentTopicRegistrationInput,
   CreateTopicRegistrationInput,
   TopicRegistrationOutput,
   UpdateTopicRegistrationInput,
@@ -22,8 +23,12 @@ import { BaseApiResponse } from '../../shared/dtos';
 import { MESSAGES } from '../../shared/constants';
 import { plainToClass } from 'class-transformer';
 import { StudentProjectService } from '../../user/providers';
-import { ROLE_ID } from '../../auth/constants';
-import { PROJECT_ROLE, StudentProject } from '#entity/student-project.entity';
+import { ROLE, ROLE_ID } from '../../auth/constants';
+import {
+  PROJECT_ROLE,
+  STUDENT_PROJECT_STATUS,
+  StudentProject,
+} from '#entity/student-project.entity';
 
 @Injectable()
 export class TopicRegistrationService {
@@ -121,7 +126,7 @@ export class TopicRegistrationService {
           });
         }
         firstStudentProject =
-          await this.studentProjectService.createStudentProject(
+          await this.studentProjectService.createStudentProjectByTeacher(
             topicRegistration,
             topic,
             firstStudent,
@@ -148,7 +153,7 @@ export class TopicRegistrationService {
             code: 4,
           });
         }
-        await this.studentProjectService.createStudentProject(
+        await this.studentProjectService.createStudentProjectByTeacher(
           topicRegistration,
           topic,
           secondStudent,
@@ -167,6 +172,100 @@ export class TopicRegistrationService {
     return {
       error: false,
       data: topicRegistrationOutput,
+      message: MESSAGES.CREATED_SUCCEED,
+      code: 0,
+    };
+  }
+
+  public async createStudentTopicRegistration(
+    input: CreateStudentTopicRegistrationInput,
+    userId: string,
+  ): Promise<BaseApiResponse<null>> {
+    const topic = await this.topicRepo.findOne({
+      where: {
+        id: input.topicId,
+        status: TOPIC_STATUS.STUDENT_ACTIVE,
+      },
+    });
+    if (!topic) {
+      throw new NotFoundException({
+        error: true,
+        message: MESSAGES.TOPIC_NOT_FOUND,
+        code: 4,
+      });
+    }
+    const user = await this.userRepo.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['role'],
+    });
+    if (!user) {
+      throw new NotFoundException({
+        error: true,
+        data: null,
+        message: MESSAGES.NOT_FOUND_USER,
+        code: 4,
+      });
+    }
+    if (user.role.name != ROLE.STUDENT) {
+      throw new HttpException(
+        {
+          error: true,
+          message: MESSAGES.ACCESSIBLE_ONLY_TO_STUDENTS,
+          code: 4,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const numberStudentInTopic = await this.studentProjectRepo.count({
+      where: {
+        topic: { id: input.topicId },
+      },
+    });
+    const userRegistered = await this.studentProjectRepo.findOne({
+      where: {
+        topic: { id: input.topicId },
+        studentId: userId,
+      },
+    });
+    if (userRegistered) {
+      throw new HttpException(
+        {
+          error: true,
+          message: MESSAGES.USER_REGISTERED_THIS_TOPIC,
+          code: 4,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (numberStudentInTopic == 0) {
+      await this.studentProjectService.createStudentProjectByStudent(
+        topic,
+        user.id,
+        PROJECT_ROLE.LEADER,
+        STUDENT_PROJECT_STATUS.ACTIVE,
+      );
+    } else if (numberStudentInTopic == 1) {
+      await this.topicRegistrationRepo.save({
+        ...input,
+        topic: topic,
+        user: user,
+        type: TYPE.STUDENT,
+      });
+    } else if (numberStudentInTopic == 2) {
+      throw new HttpException(
+        {
+          error: true,
+          message: MESSAGES.THIS_TOPIC_FULLY_REGISTERED,
+          code: 4,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return {
+      error: false,
+      data: null,
       message: MESSAGES.CREATED_SUCCEED,
       code: 0,
     };
