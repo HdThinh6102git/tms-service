@@ -70,7 +70,6 @@ export class TopicController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   public async getTopicById(
     @Param('id') topicId: string,
   ): Promise<BaseApiResponse<TopicOutput>> {
