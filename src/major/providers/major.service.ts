@@ -11,6 +11,7 @@ import { Major } from '#entity/major.entity';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
   CreateMajorInput,
+  MajorDropDownOutput,
   MajorFilter,
   MajorOutput,
   UpdateMajorInput,
@@ -145,6 +146,36 @@ export class MajorService {
       where: where,
     });
     const majorsOutput = plainToInstance(MajorOutput, majors, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      listData: majorsOutput,
+      total: count,
+    };
+  }
+
+  public async getDropdownMajors(
+    filter: MajorFilter,
+  ): Promise<BasePaginationResponse<MajorDropDownOutput>> {
+    const where: any = {
+      id: Not(IsNull()),
+      deletedAt: IsNull(),
+    };
+    if (filter.name) {
+      where['name'] = ILike(`%${filter.name}%`);
+    }
+    const majors = await this.majorRepo.find({
+      where: where,
+      take: filter.limit,
+      skip: filter.skip,
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+    const count = await this.majorRepo.count({
+      where: where,
+    });
+    const majorsOutput = plainToInstance(MajorDropDownOutput, majors, {
       excludeExtraneousValues: true,
     });
     return {

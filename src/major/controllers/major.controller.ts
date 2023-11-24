@@ -15,6 +15,7 @@ import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
   CreateMajorInput,
+  MajorDropDownOutput,
   MajorFilter,
   MajorOutput,
   UpdateMajorInput,
@@ -48,6 +49,14 @@ export class MajorController {
     @Query() query: MajorFilter,
   ): Promise<BasePaginationResponse<MajorOutput>> {
     return this.majorService.getMajors(query);
+  }
+
+  @Get('dropdown/filter')
+  @UseGuards(JwtAuthGuard)
+  public async getDropdownMajors(
+    @Query() query: MajorFilter,
+  ): Promise<BasePaginationResponse<MajorDropDownOutput>> {
+    return this.majorService.getDropdownMajors(query);
   }
 
   @Delete(':id')
