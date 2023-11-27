@@ -6,7 +6,6 @@ import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import type { NestExpressApplication } from '@nestjs/platform-express';
-import * as path from 'path';
 
 /**
  * https://docs.nestjs.com
@@ -43,7 +42,7 @@ async function bootstrap(): Promise<string> {
   }
   app.enableCors();
   // Express Middleware
-  app.useStaticAssets(path.join(__dirname, '../uploads'));
+  app.useStaticAssets(join(__dirname, '../uploads'));
   middleware(app);
   app.setGlobalPrefix('api/v1');
   await app.listen(process.env.PORT || 3500);

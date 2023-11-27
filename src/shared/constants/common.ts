@@ -7,6 +7,8 @@ export const REQUEST_ID_TOKEN_HEADER = 'x-request-id';
 export const FORWARDED_FOR_TOKEN_HEADER = 'x-forwarded-for';
 export const VERIFICATION_TIME = 1; //minutes
 export const MESSAGES = {
+  ASSIGNMENT_NOT_EXIST: 'assignment_not_exist',
+  STUDENT_PROJECT_NOT_EXIST: 'student_project_not_exist',
   THIS_TOPIC_FULLY_REGISTERED: 'this_topic_fully_registered',
   ACCESSIBLE_ONLY_TO_STUDENTS: 'accessible_only_to_students',
   TOPIC_REGISTRATION_NOT_FOUND: 'topic_registration_not_found',

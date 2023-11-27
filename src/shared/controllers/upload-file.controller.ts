@@ -1,49 +1,67 @@
 import {
-  Body,
+  BadRequestException,
   Controller,
-  Get,
+  Param,
   Post,
-  Res,
+  Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FilePictureInputDto } from '../dtos';
-import * as path from 'path';
-import { Response } from 'express';
 import { diskStorage } from 'multer';
-import { MESSAGES } from '../constants';
+import * as path from 'path';
+import { JwtAuthGuard } from '../../auth/guards';
+import { AssignmentService } from '../../assignment/providers';
 
-@Controller('picture')
+@Controller('')
 export class UploadFileController {
+  constructor(private readonly assignmentService: AssignmentService) {}
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads',
+        destination: './uploads/assignment',
         filename: (req, file, cb) => {
-          cb(null, `${file.originalname}`);
-          console.log(req);
+          const randomFileName = `${Date.now()}-${file.originalname}`;
+          cb(null, randomFileName);
+          console.log(req.baseUrl);
         },
       }),
+      fileFilter: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        const allowedExtArr = ['.pdf', '.docx', '.zip', '.rar', '.pptx'];
+        if (!allowedExtArr.includes(ext)) {
+          req.fileValidationError = `Wrong extension type. Accepted file ext are : ${allowedExtArr.toString()}`;
+          cb(null, false);
+        } else {
+          const fileSize = parseInt(req.headers['content-length']);
+          if (fileSize > 1024 * 1024 * 5) {
+            req.fileValidationError = `File size is too large. Accepted file size is less than 5 MB`;
+            cb(null, false);
+          } else {
+            cb(null, true);
+          }
+        }
+      },
     }),
   )
-  @Post('upload/local')
-  async uploadPictureLocal(
+  @UseGuards(JwtAuthGuard)
+  @Post('upload/assignment/:id')
+  async uploadUserProfilePicture(
+    @Req() req: any,
     @UploadedFile()
     file: Express.Multer.File,
+    @Param('id') assignmentId: string,
   ) {
-    return {
-      error: false,
-      data: {
-        fileName: file.originalname,
-      },
-      message: MESSAGES.UPLOADED_SUCCEED,
-      code: 0,
-    };
-  }
-
-  @Get()
-  getPicture(@Res() res: Response, @Body() file: FilePictureInputDto) {
-    res.sendFile(path.join(__dirname, '../../../uploads/' + file.fileName));
+    if (req.fileValidationError) {
+      throw new BadRequestException(req.fileValidationError);
+    }
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+    return await this.assignmentService.updateResultFile(
+      `assignment/${file.filename}`,
+      assignmentId,
+    );
   }
 }

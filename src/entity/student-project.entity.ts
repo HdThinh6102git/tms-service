@@ -4,13 +4,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Topic } from './topic.entity';
 import { TopicRegistration } from './topic-registration.entity';
-import { Assignment } from './assignment.entity';
 export enum STUDENT_PROJECT_STATUS {
   WAITING_CONFIRMATION = 1,
   REFUSED = 2,
@@ -63,7 +61,4 @@ export class StudentProject {
   )
   @JoinColumn({ name: 'topic_registration_id', referencedColumnName: 'id' })
   topicRegistration: TopicRegistration;
-
-  @OneToMany(() => Assignment, (assignment) => assignment.studentProject)
-  assignments: Assignment[];
 }

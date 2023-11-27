@@ -18,6 +18,7 @@ import { TopicModule } from './topic';
 import { MajorModule } from './major';
 import { ClassModule } from './class';
 import { TopicRegistrationModule } from './topic-registration';
+import { AssignmentModule } from './assignment';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { TopicRegistrationModule } from './topic-registration';
     MajorModule,
     ClassModule,
     TopicRegistrationModule,
+    AssignmentModule,
     // Module Router
   ],
   providers: [

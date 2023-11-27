@@ -8,9 +8,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Type } from 'class-transformer';
-import { StudentProject } from './student-project.entity';
 import { Topic } from './topic.entity';
-
+export enum ASSIGNMENT_STATUS {
+  ACTIVE = 1,
+  INACTIVE = 0,
+}
 @Entity({ name: 'assignment', schema: process.env.DB_SCHEMA })
 export class Assignment {
   @PrimaryGeneratedColumn('uuid')
@@ -46,16 +48,16 @@ export class Assignment {
   status: number;
 
   @Column('numeric', {
-    nullable: false,
+    nullable: true,
     name: 'score',
   })
   score: number;
 
-  @Column('varchar', { nullable: false, name: 'result_file' })
+  @Column('varchar', { nullable: true, name: 'result_file' })
   resultFile: string;
 
   @Column('text', {
-    nullable: false,
+    nullable: true,
     name: 'result_text',
   })
   resultText: string;
@@ -72,13 +74,6 @@ export class Assignment {
     name: 'updated_at',
   })
   updatedAt: Date;
-
-  @ManyToOne(
-    () => StudentProject,
-    (studentProject) => studentProject.assignments,
-  )
-  @JoinColumn({ name: 'student_project_id', referencedColumnName: 'id' })
-  studentProject: StudentProject;
 
   @ManyToOne(() => Topic, (topic) => topic.assignments)
   @JoinColumn({ name: 'topic_id', referencedColumnName: 'id' })
