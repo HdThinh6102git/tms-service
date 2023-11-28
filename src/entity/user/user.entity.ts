@@ -46,7 +46,7 @@ export class User extends BaseEntity {
   })
   birthDate: string;
 
-  @Column('varchar', { nullable: false, name: 'phone_number' })
+  @Column('varchar', { nullable: true, name: 'phone_number' })
   phoneNumber: string;
 
   @Column('varchar', { nullable: false, name: 'email' })

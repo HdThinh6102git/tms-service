@@ -13,6 +13,7 @@ import { diskStorage } from 'multer';
 import * as path from 'path';
 import { JwtAuthGuard } from '../../auth/guards';
 import { AssignmentService } from '../../assignment/providers';
+import { MESSAGES } from '../constants';
 
 @Controller('')
 export class UploadFileController {
@@ -63,5 +64,54 @@ export class UploadFileController {
       `assignment/${file.filename}`,
       assignmentId,
     );
+  }
+
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/instruction',
+        filename: (req, file, cb) => {
+          const randomFileName = `${Date.now()}-${file.originalname}`;
+          cb(null, randomFileName);
+          console.log(req.baseUrl);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        const allowedExtArr = ['.pdf'];
+        if (!allowedExtArr.includes(ext)) {
+          req.fileValidationError = `Wrong extension type. Accepted file ext are : ${allowedExtArr.toString()}`;
+          cb(null, false);
+        } else {
+          const fileSize = parseInt(req.headers['content-length']);
+          if (fileSize > 1024 * 1024 * 5) {
+            req.fileValidationError = `File size is too large. Accepted file size is less than 5 MB`;
+            cb(null, false);
+          } else {
+            cb(null, true);
+          }
+        }
+      },
+    }),
+  )
+  @UseGuards(JwtAuthGuard)
+  @Post('upload/instruction')
+  async uploadInstruction(
+    @Req() req: any,
+    @UploadedFile()
+    file: Express.Multer.File,
+  ) {
+    if (req.fileValidationError) {
+      throw new BadRequestException(req.fileValidationError);
+    }
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+    return {
+      error: false,
+      data: `instruction/${file.filename}`,
+      message: MESSAGES.UPLOADED_SUCCEED,
+      code: 0,
+    };
   }
 }

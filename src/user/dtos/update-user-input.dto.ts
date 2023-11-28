@@ -10,11 +10,6 @@ export class UpdateUserInput {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  email: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
   specificAddress: string;
 
   @ApiProperty()
@@ -31,8 +26,4 @@ export class UpdateUserInput {
   @IsOptional()
   @IsString()
   ward: string;
-
-  @ApiProperty()
-  @IsOptional()
-  classId: string;
 }

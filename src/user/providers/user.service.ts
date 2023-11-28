@@ -27,7 +27,7 @@ import { Province } from '#entity/user/address/province.entity';
 import { District } from '#entity/user/address/district.entity';
 import { Ward } from '#entity/user/address/ward.entity';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
-import { isValidEmail, isValidPhone } from '../../shared/utils/utils';
+import { isValidEmail } from '../../shared/utils/utils';
 import { isEmpty } from '@nestjs/common/utils/shared.utils';
 import { ROLE } from '../../auth/constants';
 import { Class } from '#entity/class.entity';
@@ -64,85 +64,6 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    //check valid phone number
-    if (!isValidPhone(data.phoneNumber)) {
-      throw new HttpException(
-        {
-          error: true,
-          data: null,
-          message: MESSAGES.WRONG_PHONE_NUMBER_FORMAT,
-          code: 1,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    //check exist province
-    const provinceExist = await this.provinceRepository.findOne({
-      where: {
-        id: data.province,
-      },
-    });
-    if (!provinceExist) {
-      throw new HttpException(
-        {
-          error: true,
-          data: null,
-          message: MESSAGES.PROVINCE_NOT_EXISTS,
-          code: 1,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    //check exist district
-    const districtExist = await this.districtRepository.findOne({
-      where: {
-        id: data.district,
-      },
-    });
-    if (!districtExist) {
-      throw new HttpException(
-        {
-          error: true,
-          data: null,
-          message: MESSAGES.DISTRICT_NOT_EXISTS,
-          code: 1,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    //check exist ward
-    const wardExist = await this.wardRepository.findOne({
-      where: {
-        id: data.ward,
-      },
-    });
-    if (!wardExist) {
-      throw new HttpException(
-        {
-          error: true,
-          data: null,
-          message: MESSAGES.WARD_NOT_EXISTS,
-          code: 1,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    //check phone exist
-    const userWithPhoneExist = await this.userRepository.findOne({
-      where: {
-        phoneNumber: data.phoneNumber,
-      },
-    });
-    if (userWithPhoneExist)
-      throw new HttpException(
-        {
-          error: true,
-          data: null,
-          message: MESSAGES.PHONE_NUMBER_EXISTS,
-          code: 1,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
     //check email exist
     const userWithEmailExist = await this.userRepository.findOne({
       where: {
@@ -175,25 +96,7 @@ export class UserService {
         },
         HttpStatus.BAD_REQUEST,
       );
-    //check exist class
-    const classExist = await this.classRepository.findOne({
-      where: {
-        id: data.classId,
-      },
-    });
-    if (!classExist) {
-      throw new HttpException(
-        {
-          error: true,
-          data: null,
-          message: MESSAGES.CLASS_NOT_EXIST,
-          code: 1,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    //set full address
-    const fullAddress = `${wardExist.level} ${wardExist.name}, ${districtExist.level} ${districtExist.name}, ${provinceExist.level} ${provinceExist.name}`;
+
     //hash password
     const hash = bcrypt.hashSync(
       data.password,
@@ -213,6 +116,7 @@ export class UserService {
         },
         HttpStatus.BAD_REQUEST,
       );
+    let classExist;
     if (userRole.name == ROLE.STUDENT) {
       if (!data.startYear || !data.finishYear) {
         throw new HttpException(
@@ -232,6 +136,23 @@ export class UserService {
             data: null,
             message: MESSAGES.CLASS_IS_REQUIRED,
             code: 4,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      //check exist class
+      classExist = await this.classRepository.findOne({
+        where: {
+          id: data.classId,
+        },
+      });
+      if (!classExist) {
+        throw new HttpException(
+          {
+            error: true,
+            data: null,
+            message: MESSAGES.CLASS_NOT_EXIST,
+            code: 1,
           },
           HttpStatus.BAD_REQUEST,
         );
@@ -264,12 +185,8 @@ export class UserService {
     //save user data
     const user = await this.userRepository.save({
       ...data,
-      province: provinceExist,
-      district: districtExist,
-      ward: wardExist,
       password: hash,
       role: userRole,
-      fullAddress: fullAddress,
       clas: classExist,
     });
     const userOutput = plainToInstance(UserOutputDto, user, {
@@ -542,9 +459,6 @@ export class UserService {
     }
     if (input.phoneNumber) {
       userExist.phoneNumber = input.phoneNumber;
-    }
-    if (input.email) {
-      userExist.email = input.email;
     }
     if (input.specificAddress) {
       userExist.specificAddress = input.specificAddress;

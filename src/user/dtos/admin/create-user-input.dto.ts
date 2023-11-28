@@ -33,40 +33,6 @@ export class CreateUserInput {
   @MaxLength(255)
   @IsString()
   @IsNotEmpty()
-  province: string;
-
-  @ApiProperty()
-  @MaxLength(255)
-  @IsString()
-  @IsNotEmpty()
-  district: string;
-
-  @ApiProperty()
-  @MaxLength(255)
-  @IsString()
-  @IsNotEmpty()
-  ward: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  specificAddress: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  birthDate: string;
-
-  @ApiProperty()
-  @MaxLength(255)
-  @IsString()
-  @IsNotEmpty()
-  phoneNumber: string;
-
-  @ApiProperty()
-  @MaxLength(255)
-  @IsString()
-  @IsNotEmpty()
   email: string;
 
   @ApiProperty()
@@ -89,6 +55,6 @@ export class CreateUserInput {
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   classId: string;
 }
