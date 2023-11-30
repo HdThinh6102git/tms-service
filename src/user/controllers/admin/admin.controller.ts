@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AdminService, UserService } from '../../providers';
-import { JwtAuthGuard } from '../../../auth/guards';
+import { JwtAdminAuthGuard } from '../../../auth/guards';
 import { ReqContext, RequestContext } from '../../../shared/request-context';
 import { BaseApiResponse, BasePaginationResponse } from '../../../shared/dtos';
 import {
@@ -41,7 +41,7 @@ export class AdminController {
   //user
 
   @Post('user')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async createNewUser(
     @Body() body: CreateUserInput,
   ): Promise<BaseApiResponse<UserOutputDto>> {
@@ -49,7 +49,7 @@ export class AdminController {
   }
 
   @Get('/user')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async getUsers(
     @Query() query: UserFilter,
   ): Promise<BasePaginationResponse<UserOutputDto>> {
@@ -57,7 +57,7 @@ export class AdminController {
   }
 
   @Patch('user/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async updateUser(
     @Param('id') userId: string,
     @Body() body: UpdateUserAdminInput,
@@ -66,7 +66,7 @@ export class AdminController {
   }
 
   @Get('user/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async getUserById(
     @Param('id') userId: string,
   ): Promise<BaseApiResponse<UserProfileOutput>> {
@@ -74,7 +74,7 @@ export class AdminController {
   }
 
   @Delete('user/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async deleteUser(
     @Param('id') userId: string,
   ): Promise<BaseApiResponse<null>> {
@@ -82,7 +82,7 @@ export class AdminController {
   }
 
   @Delete('user/permanently/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async deleteUserPermanently(
     @Param('id') userId: string,
   ): Promise<BaseApiResponse<null>> {
@@ -90,6 +90,7 @@ export class AdminController {
   }
 
   @Patch('user/restoration/:id')
+  @UseGuards(JwtAdminAuthGuard)
   public async restoreUser(
     @Param('id') userId: string,
   ): Promise<BaseApiResponse<UserOutputDto>> {
@@ -99,7 +100,7 @@ export class AdminController {
   //admin
 
   @Patch('change-password')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async changePassword(
     @ReqContext() ctx: RequestContext,
     @Body() input: ChangePasswordDto,

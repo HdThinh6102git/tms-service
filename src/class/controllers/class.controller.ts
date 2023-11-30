@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ClassService } from '../providers';
-import { JwtAuthGuard } from '../../auth/guards';
+import { JwtAdminAuthGuard } from '../../auth/guards';
 import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
@@ -19,13 +19,12 @@ import {
   CreateClassInput,
   UpdateClassInput,
 } from '../dtos';
-
+@UseGuards(JwtAdminAuthGuard)
 @Controller('class')
 export class ClassController {
   constructor(private classService: ClassService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   public async createClass(
     @ReqContext() ctx: RequestContext,
     @Body() body: CreateClassInput,
@@ -34,7 +33,6 @@ export class ClassController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   public async updateClass(
     @Param('id') classId: string,
     @Body() body: UpdateClassInput,
@@ -43,7 +41,6 @@ export class ClassController {
   }
 
   @Get('/filter')
-  @UseGuards(JwtAuthGuard)
   public async getClasses(
     @Query() query: ClassFilter,
   ): Promise<BasePaginationResponse<ClassOutput>> {
@@ -51,7 +48,6 @@ export class ClassController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   public async getClassById(
     @Param('id') classId: string,
   ): Promise<BaseApiResponse<ClassOutput>> {
@@ -59,7 +55,6 @@ export class ClassController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   public async deleteClass(
     @Param('id') classId: string,
   ): Promise<BaseApiResponse<null>> {
@@ -67,7 +62,6 @@ export class ClassController {
   }
 
   @Delete('permanently/:id')
-  @UseGuards(JwtAuthGuard)
   public async deleteClassPermanently(
     @Param('id') classId: string,
   ): Promise<BaseApiResponse<null>> {
@@ -75,7 +69,6 @@ export class ClassController {
   }
 
   @Patch('restoration/:id')
-  @UseGuards(JwtAuthGuard)
   public async retoreClass(
     @Param('id') classId: string,
   ): Promise<BaseApiResponse<ClassOutput>> {

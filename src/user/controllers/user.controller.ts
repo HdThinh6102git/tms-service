@@ -6,10 +6,10 @@ import { UserService } from '../providers';
 import { JwtAuthGuard } from '../../auth/guards';
 
 @Controller('user')
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @Get('profile')
-  @UseGuards(JwtAuthGuard)
   async getMyProfile(
     @ReqContext() ctx: RequestContext,
   ): Promise<BaseApiResponse<UserProfileOutput>> {
@@ -17,7 +17,6 @@ export class UserController {
   }
 
   @Patch('change-password')
-  @UseGuards(JwtAuthGuard)
   public async changePassword(
     @ReqContext() ctx: RequestContext,
     @Body() input: ChangePasswordDto,
@@ -30,7 +29,6 @@ export class UserController {
   }
 
   @Patch()
-  @UseGuards(JwtAuthGuard)
   public async updateProfile(
     @ReqContext() ctx: RequestContext,
     @Body() body: UpdateUserInput,

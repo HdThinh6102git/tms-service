@@ -17,8 +17,6 @@ export class AuthController {
     private mailService: MailService,
   ) {}
 
-  //login
-
   @Post('login')
   public async login(
     @Body() body: LoginInput,
@@ -33,7 +31,6 @@ export class AuthController {
     return this.authService.verifyLoginAdmin(body.username, body.password);
   }
 
-  //forgot password
   @Post('sending-forgot-password-mail')
   public async sendForgotPasswordVerificationMail(
     @Body() body: { email: string },

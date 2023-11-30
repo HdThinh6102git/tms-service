@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AssignmentService } from '../providers';
-import { JwtAuthGuard } from '../../auth/guards';
+import { JwtAuthGuard, JwtTeacherAuthGuard } from '../../auth/guards';
 import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
@@ -25,7 +25,7 @@ export class AssignmentController {
   constructor(private assignmentService: AssignmentService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTeacherAuthGuard)
   public async createAssignment(
     @ReqContext() ctx: RequestContext,
     @Body() body: CreateAssignmentInput,
@@ -34,6 +34,7 @@ export class AssignmentController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   public async updateAssignment(
     @Param('id') assignmentId: string,
     @Body() body: UpdateAssignmentInput,
@@ -42,6 +43,7 @@ export class AssignmentController {
   }
 
   @Get('/filter')
+  @UseGuards(JwtAuthGuard)
   public async getAssignments(
     @Query() query: AssignmentFilter,
   ): Promise<BasePaginationResponse<AssignmentOutput>> {
@@ -49,6 +51,7 @@ export class AssignmentController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   public async getAssignmentById(
     @Param('id') assignmentId: string,
   ): Promise<BaseApiResponse<AssignmentOutput>> {
@@ -56,7 +59,7 @@ export class AssignmentController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTeacherAuthGuard)
   public async deleteAssignmentPermanently(
     @Param('id') assignmentId: string,
   ): Promise<BaseApiResponse<null>> {

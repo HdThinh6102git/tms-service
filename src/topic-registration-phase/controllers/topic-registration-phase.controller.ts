@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TopicRegistrationPhaseService } from '../providers';
-import { JwtAuthGuard } from '../../auth/guards';
+import { JwtAdminAuthGuard } from '../../auth/guards';
 import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
@@ -20,13 +20,14 @@ import {
   UpdateTopicRegistrationPhaseInput,
 } from '../dtos';
 
+@UseGuards(JwtAdminAuthGuard)
 @Controller('admin/topic-registration-phase')
 export class TopicRegistrationPhaseController {
   constructor(
     private topicRegistrationPhaseService: TopicRegistrationPhaseService,
   ) {}
+
   @Post()
-  @UseGuards(JwtAuthGuard)
   public async createNewTopicRegistrationPhase(
     @ReqContext() ctx: RequestContext,
     @Body() body: CreateTopicRegistrationPhaseInput,
@@ -36,8 +37,8 @@ export class TopicRegistrationPhaseController {
       ctx.user.id,
     );
   }
+
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   public async updateTopicRegistrationPhase(
     @Param('id') topicRegistrationPhaseId: string,
     @Body() body: UpdateTopicRegistrationPhaseInput,
@@ -47,8 +48,8 @@ export class TopicRegistrationPhaseController {
       topicRegistrationPhaseId,
     );
   }
+
   @Get('/filter')
-  @UseGuards(JwtAuthGuard)
   public async getTopicRegistrationPhases(
     @Query() query: TopicRegistrationPhaseFilter,
   ): Promise<BasePaginationResponse<TopicRegistrationPhaseOutput>> {
@@ -56,7 +57,6 @@ export class TopicRegistrationPhaseController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   public async getTopicRegistrationPhaseById(
     @Param('id') topicRegistrationPhaseId: string,
   ): Promise<BaseApiResponse<TopicRegistrationPhaseOutput>> {
@@ -66,7 +66,6 @@ export class TopicRegistrationPhaseController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   public async deleteTopicRegistrationPhase(
     @Param('id') topicRegistrationPhaseId: string,
   ): Promise<BaseApiResponse<null>> {
@@ -76,7 +75,6 @@ export class TopicRegistrationPhaseController {
   }
 
   @Delete('permanently/:id')
-  @UseGuards(JwtAuthGuard)
   public async deleteTopicRegistrationPhasePermanently(
     @Param('id') topicRegistrationPhaseId: string,
   ): Promise<BaseApiResponse<null>> {
@@ -86,7 +84,6 @@ export class TopicRegistrationPhaseController {
   }
 
   @Patch('restoration/:id')
-  @UseGuards(JwtAuthGuard)
   public async retoreTopicRegistrationPhase(
     @Param('id') topicRegistrationPhaseId: string,
   ): Promise<BaseApiResponse<TopicRegistrationPhaseOutput>> {

@@ -11,7 +11,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
-import { JwtAuthGuard } from '../../auth/guards';
+import { JwtAdminAuthGuard, JwtAuthGuard } from '../../auth/guards';
 import { AssignmentService } from '../../assignment/providers';
 import { MESSAGES } from '../constants';
 
@@ -94,7 +94,7 @@ export class UploadFileController {
       },
     }),
   )
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   @Post('upload/instruction')
   async uploadInstruction(
     @Req() req: any,

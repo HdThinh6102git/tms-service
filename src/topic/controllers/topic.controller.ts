@@ -10,7 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TopicService } from '../providers';
-import { JwtAuthGuard } from '../../auth/guards';
+import {
+  JwtAdminAuthGuard,
+  JwtStudentAuthGuard,
+  JwtTeacherAuthGuard,
+} from '../../auth/guards';
 import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
@@ -27,7 +31,7 @@ export class TopicController {
   constructor(private topicService: TopicService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async createNewTopic(
     @ReqContext() ctx: RequestContext,
     @Body() body: CreateTopicInput,
@@ -36,7 +40,7 @@ export class TopicController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async updateTopic(
     @Param('id') topicId: string,
     @Body() body: UpdateTopicInput,
@@ -45,7 +49,7 @@ export class TopicController {
   }
 
   @Get('/filter')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async getTopics(
     @Query() query: TopicFilter,
   ): Promise<BasePaginationResponse<TopicOutput>> {
@@ -53,7 +57,7 @@ export class TopicController {
   }
 
   @Get('student')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtStudentAuthGuard)
   public async getRegistrationTopicsForStudents(
     @Query() query: TopicFilter,
   ): Promise<BasePaginationResponse<TopicOutput>> {
@@ -61,7 +65,7 @@ export class TopicController {
   }
 
   @Get(':majorId/filter')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTeacherAuthGuard)
   public async getTopicsByMajor(
     @Param('majorId') majorId: string,
     @Query() query: MajorTopicFilter,
@@ -77,7 +81,7 @@ export class TopicController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async deleteTopic(
     @Param('id') topicId: string,
   ): Promise<BaseApiResponse<null>> {
@@ -85,7 +89,7 @@ export class TopicController {
   }
 
   @Delete('permanently/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async deleteTopicPermanently(
     @Param('id') topicId: string,
   ): Promise<BaseApiResponse<null>> {
@@ -93,7 +97,7 @@ export class TopicController {
   }
 
   @Patch('restoration/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async retoreTopic(
     @Param('id') topicId: string,
   ): Promise<BaseApiResponse<TopicOutput>> {

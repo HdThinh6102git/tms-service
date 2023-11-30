@@ -1,17 +1,17 @@
-import { AuthGuard } from '@nestjs/passport';
-import { STRATEGY_JWT_AUTH } from '../constants';
 import {
   CanActivate,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ROLE, STRATEGY_JWT_AUTH } from '../constants';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class JwtAuthGuard
+export class JwtMajorHeadAuthGuard
   extends AuthGuard(STRATEGY_JWT_AUTH)
   implements CanActivate
 {
@@ -40,8 +40,10 @@ export class JwtAuthGuard
         secret: this.configService.get<string>('jwt.privateKey'),
       });
       headers.user = payload;
-      if (!headers.user.role) {
-        throw new UnauthorizedException();
+      if (headers.user.role) {
+        if (headers.user.role != ROLE.MAJOR_HEAD) {
+          throw new UnauthorizedException();
+        }
       }
       return true;
     } catch {

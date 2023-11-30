@@ -8,7 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TopicRegistrationService } from '../providers';
-import { JwtAuthGuard } from '../../auth/guards';
+import {
+  JwtMajorHeadAuthGuard,
+  JwtStudentAuthGuard,
+  JwtTeacherAuthGuard,
+} from '../../auth/guards';
 import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse } from '../../shared/dtos';
 import {
@@ -23,7 +27,7 @@ export class TopicRegistrationController {
   constructor(private topicRegistrationService: TopicRegistrationService) {}
 
   @Post('teacher')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTeacherAuthGuard)
   public async createTeacherTopicRegistration(
     @ReqContext() ctx: RequestContext,
     @Body() body: CreateTopicRegistrationInput,
@@ -35,7 +39,7 @@ export class TopicRegistrationController {
   }
 
   @Post('student')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtStudentAuthGuard)
   public async createStudentTopicRegistration(
     @ReqContext() ctx: RequestContext,
     @Body() body: CreateStudentTopicRegistrationInput,
@@ -47,7 +51,7 @@ export class TopicRegistrationController {
   }
 
   @Patch(':id/teacher/evaluate')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtMajorHeadAuthGuard)
   public async evaluateTeacherTopicRegistration(
     @Param('id') topicRegistrationId: string,
     @Body() body: UpdateTopicRegistrationInput,
@@ -59,7 +63,7 @@ export class TopicRegistrationController {
   }
 
   @Patch(':id/student/evaluate')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtStudentAuthGuard)
   public async evaluateStudentTopicRegistration(
     @Param('id') topicRegistrationId: string,
     @Body() body: UpdateTopicRegistrationInput,
@@ -71,7 +75,7 @@ export class TopicRegistrationController {
   }
 
   @Delete('cancellation/:id/teacher')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTeacherAuthGuard)
   public async cancelTeacherTopicRegistration(
     @Param('id') topicRegistrationId: string,
   ): Promise<BaseApiResponse<null>> {
@@ -81,7 +85,7 @@ export class TopicRegistrationController {
   }
 
   @Delete('cancellation/:id/student')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtStudentAuthGuard)
   public async cancelStudentTopicRegistration(
     @Param('id') topicRegistrationId: string,
   ): Promise<BaseApiResponse<null>> {

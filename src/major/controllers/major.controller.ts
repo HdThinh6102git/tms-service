@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { MajorService } from '../providers';
-import { JwtAuthGuard } from '../../auth/guards';
+import { JwtAdminAuthGuard, JwtTeacherAuthGuard } from '../../auth/guards';
 import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
@@ -26,7 +26,7 @@ export class MajorController {
   constructor(private majorService: MajorService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async createMajor(
     @ReqContext() ctx: RequestContext,
     @Body() body: CreateMajorInput,
@@ -35,7 +35,7 @@ export class MajorController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async updateMajor(
     @Param('id') majorId: string,
     @Body() body: UpdateMajorInput,
@@ -44,7 +44,7 @@ export class MajorController {
   }
 
   @Get('/filter')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async getMajors(
     @Query() query: MajorFilter,
   ): Promise<BasePaginationResponse<MajorOutput>> {
@@ -52,7 +52,7 @@ export class MajorController {
   }
 
   @Get('dropdown/filter')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTeacherAuthGuard)
   public async getDropdownMajors(
     @Query() query: MajorFilter,
   ): Promise<BasePaginationResponse<MajorDropDownOutput>> {
@@ -60,7 +60,7 @@ export class MajorController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async deleteMajor(
     @Param('id') majorId: string,
   ): Promise<BaseApiResponse<null>> {
@@ -68,7 +68,7 @@ export class MajorController {
   }
 
   @Delete('permanently/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async deleteMajorPermanently(
     @Param('id') majorId: string,
   ): Promise<BaseApiResponse<null>> {
@@ -76,7 +76,7 @@ export class MajorController {
   }
 
   @Patch('restoration/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   public async retoreMajor(
     @Param('id') majorId: string,
   ): Promise<BaseApiResponse<MajorOutput>> {
