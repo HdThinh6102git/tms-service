@@ -1,15 +1,29 @@
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ReqContext, RequestContext } from '../../shared/request-context';
-import { BaseApiResponse } from '../../shared/dtos';
-import { ChangePasswordDto, UpdateUserInput, UserProfileOutput } from '../dtos';
+import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
+import {
+  ChangePasswordDto,
+  UpdateUserInput,
+  UserFilter,
+  UserOutputDto,
+  UserProfileOutput,
+} from '../dtos';
 import { UserService } from '../providers';
 import { JwtAuthGuard } from '../../auth/guards';
 
 @Controller('user')
-@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @Get('profile')
+  @UseGuards(JwtAuthGuard)
   async getMyProfile(
     @ReqContext() ctx: RequestContext,
   ): Promise<BaseApiResponse<UserProfileOutput>> {
@@ -17,6 +31,7 @@ export class UserController {
   }
 
   @Patch('change-password')
+  @UseGuards(JwtAuthGuard)
   public async changePassword(
     @ReqContext() ctx: RequestContext,
     @Body() input: ChangePasswordDto,
@@ -28,7 +43,23 @@ export class UserController {
     );
   }
 
+  @Get('/teacher-contact')
+  public async getTeachersContact(
+    @Query() query: UserFilter,
+  ): Promise<BasePaginationResponse<UserOutputDto>> {
+    query.role = 2;
+    return this.userService.getUsers(query);
+  }
+
+  @Get(':id')
+  public async getUserById(
+    @Param('id') userId: string,
+  ): Promise<BaseApiResponse<UserProfileOutput>> {
+    return await this.userService.getMyProfile(userId);
+  }
+
   @Patch()
+  @UseGuards(JwtAuthGuard)
   public async updateProfile(
     @ReqContext() ctx: RequestContext,
     @Body() body: UpdateUserInput,
