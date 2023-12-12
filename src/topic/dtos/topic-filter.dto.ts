@@ -1,6 +1,7 @@
 import { PaginationParamsDto } from '../../shared/dtos';
-import { IsDate, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsDate, IsEnum, IsOptional } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { TOPIC_STATUS } from '#entity/topic.entity';
 
 export class TopicFilter extends PaginationParamsDto {
   @IsOptional()
@@ -18,4 +19,9 @@ export class TopicFilter extends PaginationParamsDto {
   @Type(() => Date)
   @IsDate()
   finishDate: Date;
+
+  @IsOptional()
+  @IsEnum(TOPIC_STATUS)
+  @Transform(({ value }) => (value ? Number(value) : null))
+  status: TOPIC_STATUS;
 }

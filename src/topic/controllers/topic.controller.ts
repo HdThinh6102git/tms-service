@@ -25,6 +25,7 @@ import {
   TopicOutput,
   UpdateTopicInput,
 } from '../dtos';
+import { TOPIC_STATUS } from '#entity/topic.entity';
 
 @Controller('topic')
 export class TopicController {
@@ -53,6 +54,14 @@ export class TopicController {
   public async getTopics(
     @Query() query: TopicFilter,
   ): Promise<BasePaginationResponse<TopicOutput>> {
+    return this.topicService.getTopics(query);
+  }
+
+  @Get('/references/filter')
+  public async getTopicReferences(
+    @Query() query: TopicFilter,
+  ): Promise<BasePaginationResponse<TopicOutput>> {
+    query.status = TOPIC_STATUS.STUDENT_ACTIVE;
     return this.topicService.getTopics(query);
   }
 

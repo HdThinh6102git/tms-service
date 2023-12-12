@@ -176,6 +176,9 @@ export class TopicService {
       id: Not(IsNull()),
       deletedAt: IsNull(),
     };
+    if (typeof filter.status === 'number') {
+      where['status'] = filter.status;
+    }
     if (filter.startDate) {
       where['startDate'] = filter.startDate;
     }
