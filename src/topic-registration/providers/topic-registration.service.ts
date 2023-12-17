@@ -16,6 +16,7 @@ import { Topic, TOPIC_STATUS } from '#entity/topic.entity';
 import {
   CreateStudentTopicRegistrationInput,
   CreateTopicRegistrationInput,
+  EvaluateTeacherTopicRegistrationInput,
   TopicRegistrationOutput,
   UpdateTopicRegistrationInput,
 } from '../dtos';
@@ -272,7 +273,7 @@ export class TopicRegistrationService {
   }
 
   public async evaluateTeacherTopicRegistration(
-    input: UpdateTopicRegistrationInput,
+    input: EvaluateTeacherTopicRegistrationInput,
     topicRegistrationId: string,
   ): Promise<BaseApiResponse<TopicRegistrationOutput>> {
     const topicRegistrationExist = await this.topicRegistrationRepo.findOne({
@@ -297,10 +298,20 @@ export class TopicRegistrationService {
         );
       } else if (input.status == 3) {
         topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.ACCEPTED;
-        await this.topicRepo.update(
-          { id: topicRegistrationExist.topic.id },
-          { status: TOPIC_STATUS.STUDENT_ACTIVE },
-        );
+        if (input.reviewTeacher) {
+          await this.topicRepo.update(
+            { id: topicRegistrationExist.topic.id },
+            {
+              status: TOPIC_STATUS.STUDENT_ACTIVE,
+              reviewTeacher: input.reviewTeacher,
+            },
+          );
+        } else {
+          await this.topicRepo.update(
+            { id: topicRegistrationExist.topic.id },
+            { status: TOPIC_STATUS.STUDENT_ACTIVE },
+          );
+        }
         await this.studentProjectRepo.update(
           { topicRegistration: { id: topicRegistrationExist.id } },
           { status: topicRegistrationExist.status },

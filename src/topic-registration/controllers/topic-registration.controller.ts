@@ -18,6 +18,7 @@ import { BaseApiResponse } from '../../shared/dtos';
 import {
   CreateStudentTopicRegistrationInput,
   CreateTopicRegistrationInput,
+  EvaluateTeacherTopicRegistrationInput,
   TopicRegistrationOutput,
   UpdateTopicRegistrationInput,
 } from '../dtos';
@@ -54,7 +55,7 @@ export class TopicRegistrationController {
   @UseGuards(JwtMajorHeadAuthGuard)
   public async evaluateTeacherTopicRegistration(
     @Param('id') topicRegistrationId: string,
-    @Body() body: UpdateTopicRegistrationInput,
+    @Body() body: EvaluateTeacherTopicRegistrationInput,
   ): Promise<BaseApiResponse<TopicRegistrationOutput>> {
     return await this.topicRegistrationService.evaluateTeacherTopicRegistration(
       body,
