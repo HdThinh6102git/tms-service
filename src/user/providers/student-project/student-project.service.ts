@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TopicRegistration } from '#entity/topic-registration.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { StudentProject } from '#entity/student-project.entity';
-import { BaseApiResponse } from '../../../shared/dtos';
+import { BaseApiResponse, BasePaginationResponse } from '../../../shared/dtos';
 import { MESSAGES } from '../../../shared/constants';
 import { Topic } from '#entity/topic.entity';
 import { User } from '#entity/user/user.entity';
 import { ROLE } from '../../../auth/constants';
+import { StudentProjectFilter, StudentProjectOutput } from '../../dtos';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class StudentProjectService {
@@ -59,6 +61,39 @@ export class StudentProjectService {
       data: studentProject,
       message: MESSAGES.CREATED_SUCCEED,
       code: 0,
+    };
+  }
+
+  public async getStudentProjects(
+    filter: StudentProjectFilter,
+  ): Promise<BasePaginationResponse<StudentProjectOutput>> {
+    const where: any = {
+      id: Not(IsNull()),
+    };
+    if (filter.topicId) {
+      where['topic'] = { id: filter.topicId };
+    }
+    const studentProjects = await this.studentProjectRepo.find({
+      where: where,
+      take: filter.limit,
+      skip: filter.skip,
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+    const count = await this.studentProjectRepo.count({
+      where: where,
+    });
+    const studentProjectsOutput = plainToInstance(
+      StudentProjectOutput,
+      studentProjects,
+      {
+        excludeExtraneousValues: true,
+      },
+    );
+    return {
+      listData: studentProjectsOutput,
+      total: count,
     };
   }
 }
