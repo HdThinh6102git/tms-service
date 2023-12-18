@@ -379,6 +379,7 @@ export class TopicService {
       order: {
         createdAt: 'DESC',
       },
+      relations: ['major'],
     });
     const count = await this.topicRepo.count({
       where: where,
@@ -415,6 +416,7 @@ export class TopicService {
       order: {
         createdAt: 'DESC',
       },
+      relations: ['major'],
     });
     const count = await this.topicRepo.count({
       where: where,
