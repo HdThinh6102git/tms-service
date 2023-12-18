@@ -7,5 +7,5 @@ export const ROLE = {
 export const ROLE_ID = {
   STUDENT: 1,
   TEACHER: 2,
-  MAJOR_HEAD: 3,
+  MAJOR_HEAD: 4,
 };

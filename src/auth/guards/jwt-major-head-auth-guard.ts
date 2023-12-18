@@ -40,7 +40,7 @@ export class JwtMajorHeadAuthGuard
         secret: this.configService.get<string>('jwt.privateKey'),
       });
       headers.user = payload;
-      if (headers.user.role.name != ROLE.TEACHER) {
+      if (headers.user.role.name != ROLE.MAJOR_HEAD) {
         throw new UnauthorizedException();
       }
       return true;

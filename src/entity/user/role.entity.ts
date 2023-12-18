@@ -2,13 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Permission } from './permission.entity';
 import { User } from './user.entity';
 
 export enum ROLE_STATUS {
@@ -43,10 +40,6 @@ export class Role {
     name: 'created_at',
   })
   createdAt: Date;
-
-  @ManyToMany(() => Permission)
-  @JoinTable()
-  permissions: Permission[];
 
   @OneToMany(() => User, (user) => user.role)
   users: User[];
