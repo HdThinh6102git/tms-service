@@ -385,6 +385,42 @@ export class TopicService {
     };
   }
 
+  public async getTopicsForMajorHead(
+    filter: TeacherTopicFilter,
+  ): Promise<BasePaginationResponse<TopicOutput>> {
+    const where: any = {
+      id: Not(IsNull()),
+      deletedAt: IsNull(),
+      status: TOPIC_STATUS.WAITING_CONFIRMATION,
+    };
+    if (filter.majorId) {
+      const major = await this.majorRepo.findOne({
+        where: { id: filter.majorId },
+      });
+      if (major) {
+        where['major'] = { id: filter.majorId };
+      }
+    }
+    const topics = await this.topicRepo.find({
+      where: where,
+      take: filter.limit,
+      skip: filter.skip,
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+    const count = await this.topicRepo.count({
+      where: where,
+    });
+    const topicsOutput = plainToInstance(TopicOutput, topics, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      listData: topicsOutput,
+      total: count,
+    };
+  }
+
   public async getTopicsByMajor(
     filter: MajorTopicFilter,
     majorId: string,
