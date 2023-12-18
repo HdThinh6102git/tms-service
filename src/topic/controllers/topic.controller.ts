@@ -21,6 +21,7 @@ import {
   CreateTopicInput,
   MajorTopicFilter,
   MajorTopicOutput,
+  TeacherTopicFilter,
   TopicFilter,
   TopicOutput,
   UpdateTopicInput,
@@ -71,6 +72,14 @@ export class TopicController {
     @Query() query: TopicFilter,
   ): Promise<BasePaginationResponse<TopicOutput>> {
     return this.topicService.getRegistrationTopicsForStudents(query);
+  }
+
+  @Get('teacher')
+  @UseGuards(JwtTeacherAuthGuard)
+  public async getTopicsForTeacher(
+    @Query() query: TeacherTopicFilter,
+  ): Promise<BasePaginationResponse<TopicOutput>> {
+    return this.topicService.getTopicsForTeacher(query);
   }
 
   @Get(':majorId/filter')

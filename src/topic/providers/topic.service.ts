@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, IsNull, Not, Repository } from 'typeorm';
+import { ILike, In, IsNull, Not, Repository } from 'typeorm';
 import { Admin } from '#entity/user/admin.entity';
 import { Topic, TOPIC_STATUS } from '#entity/topic.entity';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
@@ -8,6 +8,7 @@ import {
   CreateTopicInput,
   MajorTopicFilter,
   MajorTopicOutput,
+  TeacherTopicFilter,
   TopicFilter,
   TopicOutput,
   UpdateTopicInput,
@@ -334,6 +335,46 @@ export class TopicService {
     });
     const count = await this.topicRepo.count({
       where: wheres,
+    });
+    const topicsOutput = plainToInstance(TopicOutput, topics, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      listData: topicsOutput,
+      total: count,
+    };
+  }
+
+  public async getTopicsForTeacher(
+    filter: TeacherTopicFilter,
+  ): Promise<BasePaginationResponse<TopicOutput>> {
+    const statusArr = [
+      TOPIC_STATUS.WAITING_CONFIRMATION,
+      TOPIC_STATUS.TEACHER_ACTIVE,
+    ];
+    const where: any = {
+      id: Not(IsNull()),
+      deletedAt: IsNull(),
+      status: In(statusArr),
+    };
+    if (filter.majorId) {
+      const major = await this.majorRepo.findOne({
+        where: { id: filter.majorId },
+      });
+      if (major) {
+        where['major'] = { id: filter.majorId };
+      }
+    }
+    const topics = await this.topicRepo.find({
+      where: where,
+      take: filter.limit,
+      skip: filter.skip,
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+    const count = await this.topicRepo.count({
+      where: where,
     });
     const topicsOutput = plainToInstance(TopicOutput, topics, {
       excludeExtraneousValues: true,
