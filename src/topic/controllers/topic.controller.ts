@@ -12,6 +12,7 @@ import {
 import { TopicService } from '../providers';
 import {
   JwtAdminAuthGuard,
+  JwtAuthGuard,
   JwtMajorHeadAuthGuard,
   JwtStudentAuthGuard,
   JwtTeacherAuthGuard,
@@ -22,6 +23,7 @@ import {
   CreateTopicInput,
   MajorTopicFilter,
   MajorTopicOutput,
+  OnGoingTopicFilter,
   TeacherTopicFilter,
   TopicFilter,
   TopicOutput,
@@ -89,6 +91,14 @@ export class TopicController {
     @Query() query: TeacherTopicFilter,
   ): Promise<BasePaginationResponse<TopicOutput>> {
     return this.topicService.getTopicsForMajorHead(query);
+  }
+
+  @Get('on-going')
+  @UseGuards(JwtAuthGuard)
+  public async getOnGoingTopics(
+    @Query() query: OnGoingTopicFilter,
+  ): Promise<BasePaginationResponse<TopicOutput>> {
+    return this.topicService.getOnGoingTopics(query);
   }
 
   @Get(':majorId/filter')

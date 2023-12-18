@@ -8,6 +8,7 @@ import {
   CreateTopicInput,
   MajorTopicFilter,
   MajorTopicOutput,
+  OnGoingTopicFilter,
   TeacherTopicFilter,
   TopicFilter,
   TopicOutput,
@@ -20,6 +21,8 @@ import { ROLE } from '../../auth/constants';
 import { UserOutputDto } from '../../user/dtos';
 import { isEmpty } from '@nestjs/common/utils/shared.utils';
 import { Major } from '#entity/major.entity';
+import { TopicRegistration, TYPE } from '#entity/topic-registration.entity';
+import { StudentProject } from '#entity/student-project.entity';
 
 @Injectable()
 export class TopicService {
@@ -32,6 +35,10 @@ export class TopicService {
     private userRepo: Repository<User>,
     @InjectRepository(Major)
     private majorRepo: Repository<Major>,
+    @InjectRepository(TopicRegistration)
+    private topicRegistrationRepo: Repository<TopicRegistration>,
+    @InjectRepository(StudentProject)
+    private studentProjectRepo: Repository<StudentProject>,
   ) {}
   public async createTopic(
     input: CreateTopicInput,
@@ -446,6 +453,65 @@ export class TopicService {
       where: where,
     });
     const topicsOutput = plainToInstance(MajorTopicOutput, topics, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      listData: topicsOutput,
+      total: count,
+    };
+  }
+
+  public async getOnGoingTopics(
+    filter: OnGoingTopicFilter,
+  ): Promise<BasePaginationResponse<TopicOutput>> {
+    const where: any = {
+      id: Not(IsNull()),
+      deletedAt: IsNull(),
+      status: TOPIC_STATUS.STUDENT_ACTIVE,
+    };
+    if (filter.teacherId) {
+      const topicRegistrations = await this.topicRegistrationRepo.find({
+        where: {
+          type: TYPE.TEACHER,
+          user: { id: filter.teacherId },
+        },
+        relations: ['topic'],
+      });
+      if (topicRegistrations) {
+        const topicIdsArr = topicRegistrations.map(
+          (topicRegistration) => topicRegistration.topic.id,
+        );
+        where['id'] = In(topicIdsArr);
+      }
+    }
+
+    if (filter.studentProjectId) {
+      const studentProjects = await this.studentProjectRepo.find({
+        where: {
+          studentId: filter.studentProjectId,
+        },
+        relations: ['topic'],
+      });
+      if (studentProjects) {
+        const topicIdsArr = studentProjects.map(
+          (studentProject) => studentProject.topic.id,
+        );
+        where['id'] = In(topicIdsArr);
+      }
+    }
+    const topics = await this.topicRepo.find({
+      where: where,
+      take: filter.limit,
+      skip: filter.skip,
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: ['major'],
+    });
+    const count = await this.topicRepo.count({
+      where: where,
+    });
+    const topicsOutput = plainToInstance(TopicOutput, topics, {
       excludeExtraneousValues: true,
     });
     return {
