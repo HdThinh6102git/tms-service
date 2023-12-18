@@ -18,6 +18,7 @@ import { Assignment } from './assignment.entity';
 export enum TOPIC_STATUS {
   TEACHER_ACTIVE = 1,
   STUDENT_ACTIVE = 2,
+  WAITING_CONFIRMATION = 3,
 }
 
 @Entity({ name: 'topic', schema: process.env.DB_SCHEMA })

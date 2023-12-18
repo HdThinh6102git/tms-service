@@ -162,6 +162,10 @@ export class TopicRegistrationService {
           user.role.name,
         );
       }
+      await this.topicRepo.update(
+        { id: topic.id },
+        { status: TOPIC_STATUS.WAITING_CONFIRMATION },
+      );
     }
     const topicRegistrationOutput = plainToClass(
       TopicRegistrationOutput,
