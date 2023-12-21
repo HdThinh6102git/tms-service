@@ -24,7 +24,7 @@ import { BaseApiResponse } from '../../shared/dtos';
 import { MESSAGES } from '../../shared/constants';
 import { plainToClass } from 'class-transformer';
 import { StudentProjectService } from '../../user/providers';
-import { ROLE, ROLE_ID } from '../../auth/constants';
+import { ROLE } from '../../auth/constants';
 import {
   PROJECT_ROLE,
   STUDENT_PROJECT_STATUS,
@@ -115,7 +115,7 @@ export class TopicRegistrationService {
         const firstStudent = await this.userRepo.findOne({
           where: {
             email: input.firstStudentEmail,
-            role: { id: ROLE_ID.STUDENT },
+            role: { name: ROLE.STUDENT },
           },
         });
         if (!firstStudent) {
@@ -143,7 +143,7 @@ export class TopicRegistrationService {
         const secondStudent = await this.userRepo.findOne({
           where: {
             email: input.secondStudentEmail,
-            role: { id: ROLE_ID.STUDENT },
+            role: { name: ROLE.STUDENT },
           },
         });
         if (!secondStudent) {
