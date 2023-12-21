@@ -25,6 +25,7 @@ import {
   MajorTopicOutput,
   OnGoingTopicFilter,
   TeacherTopicFilter,
+  TeacherTopicOutput,
   TopicFilter,
   TopicOutput,
   UpdateTopicInput,
@@ -81,8 +82,9 @@ export class TopicController {
   @UseGuards(JwtTeacherAuthGuard)
   public async getTopicsForTeacher(
     @Query() query: TeacherTopicFilter,
-  ): Promise<BasePaginationResponse<TopicOutput>> {
-    return this.topicService.getTopicsForTeacher(query);
+    @ReqContext() ctx: RequestContext,
+  ): Promise<BasePaginationResponse<TeacherTopicOutput>> {
+    return this.topicService.getTopicsForTeacher(query, ctx.user.id);
   }
 
   @Get('major-head')

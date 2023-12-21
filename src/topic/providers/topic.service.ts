@@ -10,6 +10,7 @@ import {
   MajorTopicOutput,
   OnGoingTopicFilter,
   TeacherTopicFilter,
+  TeacherTopicOutput,
   TopicFilter,
   TopicOutput,
   UpdateTopicInput,
@@ -354,7 +355,8 @@ export class TopicService {
 
   public async getTopicsForTeacher(
     filter: TeacherTopicFilter,
-  ): Promise<BasePaginationResponse<TopicOutput>> {
+    userId: string,
+  ): Promise<BasePaginationResponse<TeacherTopicOutput>> {
     const statusArr = [
       TOPIC_STATUS.WAITING_CONFIRMATION,
       TOPIC_STATUS.TEACHER_ACTIVE,
@@ -381,12 +383,28 @@ export class TopicService {
       },
       relations: ['major'],
     });
+
     const count = await this.topicRepo.count({
       where: where,
     });
-    const topicsOutput = plainToInstance(TopicOutput, topics, {
+    const topicsOutput = plainToInstance(TeacherTopicOutput, topics, {
       excludeExtraneousValues: true,
     });
+    for (let i = 0; i < topicsOutput.length; i++) {
+      const myRegistration = await this.topicRegistrationRepo.findOne({
+        where: {
+          topic: { id: topicsOutput[i].id },
+          user: { id: userId },
+        },
+      });
+      if (myRegistration) {
+        topicsOutput[i].isYourRegistration = true;
+        topicsOutput[i].topicRegistrationId = myRegistration.id;
+      } else {
+        topicsOutput[i].isYourRegistration = false;
+        topicsOutput[i].topicRegistrationId = null;
+      }
+    }
     return {
       listData: topicsOutput,
       total: count,
