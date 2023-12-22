@@ -407,6 +407,7 @@ export class TopicRegistrationService {
         type: TYPE.TEACHER,
         status: TOPIC_REGISTRATION_STATUS.WAITING_CONFIRMATION,
       },
+      relations: ['topic'],
     });
     if (!topicRegistration) {
       throw new NotFoundException({
@@ -419,6 +420,10 @@ export class TopicRegistrationService {
       topicRegistration: { id: topicRegistration.id },
     });
     await this.topicRegistrationRepo.delete(topicRegistrationId);
+    await this.topicRepo.update(
+      { id: topicRegistration.topic.id },
+      { status: TOPIC_STATUS.TEACHER_ACTIVE },
+    );
     return {
       error: false,
       data: null,
