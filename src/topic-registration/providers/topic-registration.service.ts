@@ -306,14 +306,32 @@ export class TopicRegistrationService {
         );
       } else if (input.status == 3) {
         topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.ACCEPTED;
-        if (input.reviewTeacher) {
-          await this.topicRepo.update(
-            { id: topicRegistrationExist.topic.id },
-            {
-              status: TOPIC_STATUS.STUDENT_ACTIVE,
-              reviewTeacher: input.reviewTeacher,
+        if (input.reviewTeacherMail) {
+          const reviewTeacher = await this.userRepo.findOne({
+            where: {
+              email: input.reviewTeacherMail,
+              role: { name: ROLE.TEACHER },
             },
-          );
+          });
+          if (reviewTeacher) {
+            if (reviewTeacher.id == topicRegistrationExist.user.id) {
+              throw new HttpException(
+                {
+                  error: true,
+                  message: MESSAGES.REVIEWER_CAN_NOT_BE_THE_SAME_AS_REGISTRANT,
+                  code: 4,
+                },
+                HttpStatus.BAD_REQUEST,
+              );
+            }
+            await this.topicRepo.update(
+              { id: topicRegistrationExist.topic.id },
+              {
+                status: TOPIC_STATUS.STUDENT_ACTIVE,
+                reviewTeacher: reviewTeacher.id,
+              },
+            );
+          }
         } else {
           await this.topicRepo.update(
             { id: topicRegistrationExist.topic.id },

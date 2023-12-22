@@ -7,6 +7,8 @@ export const REQUEST_ID_TOKEN_HEADER = 'x-request-id';
 export const FORWARDED_FOR_TOKEN_HEADER = 'x-forwarded-for';
 export const VERIFICATION_TIME = 1; //minutes
 export const MESSAGES = {
+  REVIEWER_CAN_NOT_BE_THE_SAME_AS_REGISTRANT:
+    'reviewer_can_not_be_the_same_as_registrant',
   ASSIGNMENT_NOT_EXIST: 'assignment_not_exist',
   STUDENT_PROJECT_NOT_EXIST: 'student_project_not_exist',
   THIS_TOPIC_FULLY_REGISTERED: 'this_topic_fully_registered',

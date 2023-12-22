@@ -9,5 +9,5 @@ export class EvaluateTeacherTopicRegistrationInput {
 
   @ApiProperty()
   @IsOptional()
-  reviewTeacher: string;
+  reviewTeacherMail: string;
 }
