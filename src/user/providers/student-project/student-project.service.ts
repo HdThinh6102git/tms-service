@@ -8,7 +8,11 @@ import { MESSAGES } from '../../../shared/constants';
 import { Topic } from '#entity/topic.entity';
 import { User } from '#entity/user/user.entity';
 import { ROLE } from '../../../auth/constants';
-import { StudentProjectFilter, StudentProjectOutput } from '../../dtos';
+import {
+  StudentProjectFilter,
+  StudentProjectOutput,
+  UserOutputDto,
+} from '../../dtos';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
@@ -16,6 +20,8 @@ export class StudentProjectService {
   constructor(
     @InjectRepository(StudentProject)
     private studentProjectRepo: Repository<StudentProject>,
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
   ) {}
 
   public async createStudentProjectByTeacher(
@@ -91,6 +97,19 @@ export class StudentProjectService {
         excludeExtraneousValues: true,
       },
     );
+    for (let i = 0; i < studentProjectsOutput.length; i++) {
+      const studentInfo = await this.userRepo.findOne({
+        where: {
+          id: studentProjects[i].studentId,
+        },
+      });
+      const studentInfoOutput = plainToInstance(UserOutputDto, studentInfo, {
+        excludeExtraneousValues: true,
+      });
+      if (studentInfo) {
+        studentProjectsOutput[i].studentInfor = studentInfoOutput;
+      }
+    }
     return {
       listData: studentProjectsOutput,
       total: count,
