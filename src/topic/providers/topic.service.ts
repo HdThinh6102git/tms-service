@@ -6,6 +6,7 @@ import { Topic, TOPIC_STATUS } from '#entity/topic.entity';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
   CreateTopicInput,
+  MajorHeadTopicOutput,
   MajorTopicFilter,
   MajorTopicOutput,
   OnGoingTopicFilter,
@@ -413,7 +414,7 @@ export class TopicService {
 
   public async getTopicsForMajorHead(
     filter: TeacherTopicFilter,
-  ): Promise<BasePaginationResponse<TopicOutput>> {
+  ): Promise<BasePaginationResponse<MajorHeadTopicOutput>> {
     const where: any = {
       id: Not(IsNull()),
       deletedAt: IsNull(),
@@ -439,9 +440,21 @@ export class TopicService {
     const count = await this.topicRepo.count({
       where: where,
     });
-    const topicsOutput = plainToInstance(TopicOutput, topics, {
+    const topicsOutput = plainToInstance(MajorHeadTopicOutput, topics, {
       excludeExtraneousValues: true,
     });
+    for (let i = 0; i < topicsOutput.length; i++) {
+      const topicRegistration = await this.topicRegistrationRepo.findOne({
+        where: {
+          topic: { id: topicsOutput[i].id },
+        },
+      });
+      if (topicRegistration) {
+        topicsOutput[i].topicRegistrationId = topicRegistration.id;
+      } else {
+        topicsOutput[i].topicRegistrationId = null;
+      }
+    }
     return {
       listData: topicsOutput,
       total: count,

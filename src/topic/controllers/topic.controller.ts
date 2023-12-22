@@ -21,6 +21,7 @@ import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
   CreateTopicInput,
+  MajorHeadTopicOutput,
   MajorTopicFilter,
   MajorTopicOutput,
   OnGoingTopicFilter,
@@ -91,7 +92,7 @@ export class TopicController {
   @UseGuards(JwtMajorHeadAuthGuard)
   public async getTopicsForMajorHead(
     @Query() query: TeacherTopicFilter,
-  ): Promise<BasePaginationResponse<TopicOutput>> {
+  ): Promise<BasePaginationResponse<MajorHeadTopicOutput>> {
     return this.topicService.getTopicsForMajorHead(query);
   }
 
