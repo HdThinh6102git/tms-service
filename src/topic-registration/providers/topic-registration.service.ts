@@ -300,6 +300,10 @@ export class TopicRegistrationService {
           { topicRegistration: { id: topicRegistrationExist.id } },
           { status: topicRegistrationExist.status },
         );
+        await this.topicRepo.update(
+          { id: topicRegistrationExist.topic.id },
+          { status: TOPIC_STATUS.TEACHER_ACTIVE },
+        );
       } else if (input.status == 3) {
         topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.ACCEPTED;
         if (input.reviewTeacher) {
