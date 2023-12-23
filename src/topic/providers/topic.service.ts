@@ -415,10 +415,14 @@ export class TopicService {
   public async getTopicsForMajorHead(
     filter: TeacherTopicFilter,
   ): Promise<BasePaginationResponse<MajorHeadTopicOutput>> {
+    const statusArr = [
+      TOPIC_STATUS.WAITING_CONFIRMATION,
+      TOPIC_STATUS.STUDENT_ACTIVE,
+    ];
     const where: any = {
       id: Not(IsNull()),
       deletedAt: IsNull(),
-      status: TOPIC_STATUS.WAITING_CONFIRMATION,
+      status: In(statusArr),
     };
     if (filter.majorId) {
       const major = await this.majorRepo.findOne({
