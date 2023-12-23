@@ -193,6 +193,7 @@ export class TopicRegistrationService {
     const leader = await this.studentProjectRepo.findOne({
       where: {
         studentId: userId,
+        topic: { id: input.topicId },
       },
     });
     if (leader) {
@@ -494,6 +495,7 @@ export class TopicRegistrationService {
         type: TYPE.STUDENT,
         status: TOPIC_REGISTRATION_STATUS.WAITING_CONFIRMATION,
       },
+      relations: ['topic'],
     });
     if (!topicRegistration) {
       throw new NotFoundException({
@@ -503,6 +505,10 @@ export class TopicRegistrationService {
       });
     }
     await this.topicRegistrationRepo.delete(topicRegistrationId);
+    await this.topicRepo.update(
+      { id: topicRegistration.topic.id },
+      { status: TOPIC_STATUS.STUDENT_ACTIVE },
+    );
     return {
       error: false,
       data: null,
