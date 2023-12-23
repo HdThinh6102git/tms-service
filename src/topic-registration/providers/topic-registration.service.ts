@@ -20,9 +20,13 @@ import {
   TopicRegistrationOutput,
   UpdateTopicRegistrationInput,
 } from '../dtos';
-import { BaseApiResponse } from '../../shared/dtos';
+import {
+  BaseApiResponse,
+  BasePaginationResponse,
+  PaginationParamsDto,
+} from '../../shared/dtos';
 import { MESSAGES } from '../../shared/constants';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { StudentProjectService } from '../../user/providers';
 import { ROLE } from '../../auth/constants';
 import {
@@ -481,6 +485,53 @@ export class TopicRegistrationService {
       data: null,
       message: MESSAGES.DELETED_SUCCEED,
       code: 0,
+    };
+  }
+
+  public async getWaitingStudentConfirmTopicRegistrations(
+    topicId: string,
+    filter: PaginationParamsDto,
+  ): Promise<BasePaginationResponse<TopicRegistrationOutput>> {
+    const topicExist = await this.topicRepo.findOne({
+      where: {
+        id: topicId,
+      },
+    });
+    if (!topicExist) {
+      throw new NotFoundException({
+        error: true,
+        message: MESSAGES.TOPIC_NOT_FOUND,
+        code: 4,
+      });
+    }
+    const topicRegistrations = await this.topicRegistrationRepo.find({
+      where: {
+        topic: { id: topicExist.id },
+        type: TYPE.STUDENT,
+      },
+      take: filter.limit,
+      skip: filter.skip,
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: ['user'],
+    });
+    const count = await this.topicRegistrationRepo.count({
+      where: {
+        topic: { id: topicExist.id },
+        type: TYPE.STUDENT,
+      },
+    });
+    const topicRegistrationsOutput = plainToInstance(
+      TopicRegistrationOutput,
+      topicRegistrations,
+      {
+        excludeExtraneousValues: true,
+      },
+    );
+    return {
+      listData: topicRegistrationsOutput,
+      total: count,
     };
   }
 }

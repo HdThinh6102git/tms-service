@@ -2,9 +2,11 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { TopicRegistrationService } from '../providers';
@@ -14,7 +16,11 @@ import {
   JwtTeacherAuthGuard,
 } from '../../auth/guards';
 import { ReqContext, RequestContext } from '../../shared/request-context';
-import { BaseApiResponse } from '../../shared/dtos';
+import {
+  BaseApiResponse,
+  BasePaginationResponse,
+  PaginationParamsDto,
+} from '../../shared/dtos';
 import {
   CreateStudentTopicRegistrationInput,
   CreateTopicRegistrationInput,
@@ -92,6 +98,18 @@ export class TopicRegistrationController {
   ): Promise<BaseApiResponse<null>> {
     return this.topicRegistrationService.cancelStudentTopicRegistration(
       topicRegistrationId,
+    );
+  }
+
+  @Get('/waiting-student-confirm/:topicId')
+  @UseGuards(JwtStudentAuthGuard)
+  public async getWaitingStudentConfirmTopicRegistrations(
+    @Param('topicId') topicId: string,
+    @Query() query: PaginationParamsDto,
+  ): Promise<BasePaginationResponse<TopicRegistrationOutput>> {
+    return this.topicRegistrationService.getWaitingStudentConfirmTopicRegistrations(
+      topicId,
+      query,
     );
   }
 }
