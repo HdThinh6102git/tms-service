@@ -190,6 +190,21 @@ export class TopicRegistrationService {
     input: CreateStudentTopicRegistrationInput,
     userId: string,
   ): Promise<BaseApiResponse<null>> {
+    const leader = await this.studentProjectRepo.findOne({
+      where: {
+        studentId: userId,
+      },
+    });
+    if (leader) {
+      throw new HttpException(
+        {
+          error: true,
+          message: MESSAGES.USER_REGISTERED_THIS_TOPIC,
+          code: 4,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const topic = await this.topicRepo.findOne({
       where: {
         id: input.topicId,
