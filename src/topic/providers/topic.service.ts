@@ -271,11 +271,15 @@ export class TopicService {
     filter: TopicFilter,
     userId: string,
   ): Promise<BasePaginationResponse<TeacherTopicOutput>> {
+    const statusArr = [
+      TOPIC_STATUS.WAITING_CONFIRMATION_STUDENT,
+      TOPIC_STATUS.STUDENT_ACTIVE,
+    ];
     let wheres: any[] = [];
     const where: any = {
       id: Not(IsNull()),
       deletedAt: IsNull(),
-      status: TOPIC_STATUS.STUDENT_ACTIVE,
+      status: In(statusArr),
     };
     if (filter.startDate) {
       where['startDate'] = filter.startDate;
