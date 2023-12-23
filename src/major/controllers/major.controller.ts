@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { MajorService } from '../providers';
-import { JwtAdminAuthGuard, JwtTeacherAuthGuard } from '../../auth/guards';
+import {JwtAdminAuthGuard, JwtAuthGuard,} from '../../auth/guards';
 import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {
@@ -52,7 +52,7 @@ export class MajorController {
   }
 
   @Get('dropdown/filter')
-  @UseGuards(JwtTeacherAuthGuard)
+  @UseGuards(JwtAuthGuard)
   public async getDropdownMajors(
     @Query() query: MajorFilter,
   ): Promise<BasePaginationResponse<MajorDropDownOutput>> {
