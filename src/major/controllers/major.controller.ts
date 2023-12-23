@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { MajorService } from '../providers';
-import {JwtAdminAuthGuard, JwtAuthGuard,} from '../../auth/guards';
+import { JwtAdminAuthGuard, JwtAuthGuard } from '../../auth/guards';
 import { ReqContext, RequestContext } from '../../shared/request-context';
 import { BaseApiResponse, BasePaginationResponse } from '../../shared/dtos';
 import {

@@ -24,7 +24,7 @@ import { UserOutputDto } from '../../user/dtos';
 import { isEmpty } from '@nestjs/common/utils/shared.utils';
 import { Major } from '#entity/major.entity';
 import { TopicRegistration, TYPE } from '#entity/topic-registration.entity';
-import { StudentProject } from '#entity/student-project.entity';
+import { PROJECT_ROLE, StudentProject } from '#entity/student-project.entity';
 
 @Injectable()
 export class TopicService {
@@ -689,6 +689,49 @@ export class TopicService {
       data: topicOutput,
       message: MESSAGES.UPDATE_SUCCEED,
       code: 0,
+    };
+  }
+
+  public async getWaitingStudentConfirmTopics(
+    filter: OnGoingTopicFilter,
+    userId: string,
+  ): Promise<BasePaginationResponse<TopicOutput>> {
+    const studentProjects = await this.studentProjectRepo.find({
+      where: {
+        studentId: userId,
+        role: PROJECT_ROLE.LEADER,
+      },
+      relations: ['topic'],
+    });
+    let topicIds: any = [];
+    if (studentProjects) {
+      topicIds = studentProjects.map(
+        (studentProject) => studentProject.topic.id,
+      );
+    }
+    const where: any = {
+      deletedAt: IsNull(),
+      status: TOPIC_STATUS.WAITING_CONFIRMATION_STUDENT,
+      id: In(topicIds),
+    };
+    const topics = await this.topicRepo.find({
+      where: where,
+      take: filter.limit,
+      skip: filter.skip,
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: ['major'],
+    });
+    const count = await this.topicRepo.count({
+      where: where,
+    });
+    const topicsOutput = plainToInstance(TopicOutput, topics, {
+      excludeExtraneousValues: true,
+    });
+    return {
+      listData: topicsOutput,
+      total: count,
     };
   }
 }

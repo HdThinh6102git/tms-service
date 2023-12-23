@@ -108,6 +108,15 @@ export class TopicController {
     return this.topicService.getOnGoingTopics(query);
   }
 
+  @Get('waiting-student-confirm')
+  @UseGuards(JwtStudentAuthGuard)
+  public async getWaitingStudentConfirmTopics(
+    @ReqContext() ctx: RequestContext,
+    @Query() query: OnGoingTopicFilter,
+  ): Promise<BasePaginationResponse<TopicOutput>> {
+    return this.topicService.getWaitingStudentConfirmTopics(query, ctx.user.id);
+  }
+
   @Get(':majorId/filter')
   @UseGuards(JwtTeacherAuthGuard)
   public async getTopicsByMajor(
