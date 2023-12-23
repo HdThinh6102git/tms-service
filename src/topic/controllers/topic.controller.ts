@@ -74,9 +74,13 @@ export class TopicController {
   @Get('student')
   @UseGuards(JwtStudentAuthGuard)
   public async getRegistrationTopicsForStudents(
+    @ReqContext() ctx: RequestContext,
     @Query() query: TopicFilter,
   ): Promise<BasePaginationResponse<TopicOutput>> {
-    return this.topicService.getRegistrationTopicsForStudents(query);
+    return this.topicService.getRegistrationTopicsForStudents(
+      query,
+      ctx.user.id,
+    );
   }
 
   @Get('teacher')

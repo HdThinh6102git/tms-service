@@ -269,7 +269,8 @@ export class TopicService {
 
   public async getRegistrationTopicsForStudents(
     filter: TopicFilter,
-  ): Promise<BasePaginationResponse<TopicOutput>> {
+    userId: string,
+  ): Promise<BasePaginationResponse<TeacherTopicOutput>> {
     let wheres: any[] = [];
     const where: any = {
       id: Not(IsNull()),
@@ -345,9 +346,24 @@ export class TopicService {
     const count = await this.topicRepo.count({
       where: wheres,
     });
-    const topicsOutput = plainToInstance(TopicOutput, topics, {
+    const topicsOutput = plainToInstance(TeacherTopicOutput, topics, {
       excludeExtraneousValues: true,
     });
+    for (let i = 0; i < topicsOutput.length; i++) {
+      const myRegistration = await this.topicRegistrationRepo.findOne({
+        where: {
+          topic: { id: topicsOutput[i].id },
+          user: { id: userId },
+        },
+      });
+      if (myRegistration) {
+        topicsOutput[i].isYourRegistration = true;
+        topicsOutput[i].topicRegistrationId = myRegistration.id;
+      } else {
+        topicsOutput[i].isYourRegistration = false;
+        topicsOutput[i].topicRegistrationId = null;
+      }
+    }
     return {
       listData: topicsOutput,
       total: count,
