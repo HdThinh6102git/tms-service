@@ -392,6 +392,10 @@ export class TopicRegistrationService {
     if (typeof input.status === 'number') {
       if (input.status == 2) {
         topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.REFUSED;
+        await this.topicRepo.update(
+          { id: topicRegistrationExist.topic.id },
+          { status: TOPIC_STATUS.STUDENT_ACTIVE },
+        );
       } else if (input.status == 3) {
         topicRegistrationExist.status = TOPIC_REGISTRATION_STATUS.ACCEPTED;
         const topic = await this.topicRepo.findOne({
@@ -400,6 +404,10 @@ export class TopicRegistrationService {
           },
         });
         if (topic) {
+          await this.topicRepo.update(
+            { id: topicRegistrationExist.topic.id },
+            { status: TOPIC_STATUS.STUDENT_ACTIVE },
+          );
           await this.studentProjectService.createStudentProjectByStudent(
             topic,
             topicRegistrationExist.user.id,
