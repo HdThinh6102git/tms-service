@@ -258,6 +258,10 @@ export class TopicRegistrationService {
         user: user,
         type: TYPE.STUDENT,
       });
+      await this.topicRepo.update(
+        { id: input.topicId },
+        { status: TOPIC_STATUS.WAITING_CONFIRMATION_STUDENT },
+      );
     } else if (numberStudentInTopic == 2) {
       throw new HttpException(
         {

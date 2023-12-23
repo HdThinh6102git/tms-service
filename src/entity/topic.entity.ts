@@ -19,6 +19,7 @@ export enum TOPIC_STATUS {
   TEACHER_ACTIVE = 1,
   STUDENT_ACTIVE = 2,
   WAITING_CONFIRMATION = 3,
+  WAITING_CONFIRMATION_STUDENT = 4,
 }
 
 @Entity({ name: 'topic', schema: process.env.DB_SCHEMA })
